@@ -23,6 +23,109 @@ void Entity::uploadMvM(dmat4 const& modelViewMat) const
 
 void Entity::update() {}
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//------------------------ENTIDADES CUÁDRICAS------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+Sphere::Sphere(GLdouble r) {
+	this->r = r;
+}
+
+void Sphere::render(glm::dmat4 const& modelViewMat) {
+	
+	uploadMvM(modelViewMat);
+	
+	// Fijar el color con glColor3f(...);
+	//glColor3f(0.0, 0.0, 0.0);
+	
+	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
+	//gluQuadricDrawStyle(q, GLU_LINE);
+
+	//gluSphere(q, r, 50, 50);
+
+	//gluQuadricDrawStyle(q, GLU_FILL);
+
+	//glColor3f(1.0, 1.0, 1.0);
+}
+
+void Sphere::update() {}
+
+Cylinder::Cylinder(GLdouble r1, GLdouble r2, GLdouble h) {
+	this->r1 = r1;
+	this->r2 = r2;
+	this->h = h;
+}
+
+void Cylinder::render(glm::dmat4 const& modelViewMat) {
+
+	uploadMvM(modelViewMat);
+
+	// Fijar el color con glColor3f(...);
+	//glColor3f(0.0, 0.0, 0.0);
+
+	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
+	//gluQuadricDrawStyle(q, GLU_LINE);
+
+	//gluCylinder(q, r1, r2, h, 50, 50);
+
+	//gluQuadricDrawStyle(q, GLU_FILL);
+	//glColor3f(1.0, 1.0, 1.0);
+}
+
+void Cylinder::update() { }
+
+
+Disk::Disk(GLdouble r1, GLdouble r2) {
+	this->r1 = r1;
+	this->r2 = r2;
+}
+
+void Disk::render(glm::dmat4 const& modelViewMat) {
+
+	uploadMvM(modelViewMat);
+
+	// Fijar el color con glColor3f(...);
+	//glColor3f(0.0, 0.0, 0.0);
+
+	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
+	//gluQuadricDrawStyle(q, GLU_LINE);
+
+	//(q, r1, r2, 50, 50);
+
+	//gluQuadricDrawStyle(q, GLU_FILL);
+	//glColor3f(1.0, 1.0, 1.0);
+}
+
+void Disk::update() {}
+
+PartialDisk::PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin)
+{
+	this->r1 = r1;
+	this->r2 = r2;
+	this->ini = ini;
+	this->fin = fin;
+}
+
+void PartialDisk::render(glm::dmat4 const & modelViewMat)
+{
+	uploadMvM(modelViewMat);
+
+	// Fijar el color con glColor3f(...);
+	//glColor3f(0.0, 0.0, 0.0);
+
+	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
+	//gluQuadricDrawStyle(q, GLU_LINE);
+
+	//gluPartialDisk(q, r1, r2, 50, 50, ini, fin);
+
+	//gluQuadricDrawStyle(q, GLU_FILL);
+	//glColor3f(1.0, 1.0, 1.0);
+}
+
+void PartialDisk::update() {}
+
 
 /*
 	Debemos implementar estos tres métodos para cada clase que queramos mostrar.
@@ -458,10 +561,6 @@ void EstrellaTexCor::render(dmat4 const &modelViewMat)
 	}
 }
 
-
-
-
-
 void EstrellaTexCor::update() {
 	this->angle += this->incrAngle;
 }
@@ -510,6 +609,7 @@ void CajaTexCor::render(dmat4 const &modelViewMat)
 
 void CajaTexCor::update() {
 }
+
 //------------------------------------------------------------------------
 
 //FOTO
@@ -524,7 +624,7 @@ Foto::~Foto()
 	delete mesh; mesh = nullptr;
 };
 
-void Foto::render(Camera const& cam)
+void Foto::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
@@ -543,4 +643,93 @@ void Foto::render(Camera const& cam)
 void Foto::update() {
 	texture.loadColorBuffer();
 }
+
+//------------------------------------------------------------------------
+
+//CANGILON
+
+Cangilon::Cangilon(GLdouble l) : CajaTexCor(l)
+{
+	this->angle = 0;
+	this->incrAngle = 3;
+}
+
+Cangilon::~Cangilon()
+{
+	delete mesh; mesh = nullptr;
+};
+
+void Cangilon::render(dmat4 const &modelViewMat)
+{
+	if (mesh != nullptr) {
+
+		dmat4 auxModelMat = modelViewMat;
+
+		//Traslación para la animación 3D
+		auxModelMat = translate(auxModelMat, dvec3(2 * cos(radians(this->angle)), 2 * sin(radians(this->angle)), 0.0));
+
+		texture.bind(GL_REPLACE);
+
+		uploadMvM(auxModelMat);
+
+		__super::render(auxModelMat);
+
+		texture.unbind();
+	}
+}
+
+void Cangilon::update() {
+	this->angle += this->incrAngle;
+}
+
+//------------------------------------------------------------------------
+
+//ROTOR
+
+Rotor::Rotor(GLdouble r, GLdouble w)
+{	
+	this->r = r;
+	this->w = w;
+	this->angle = 0;
+	this->incrAngle = 3;
+}
+
+Rotor::~Rotor()
+{
+	delete mesh; mesh = nullptr;
+};
+
+void Rotor::render(dmat4 const &modelViewMat)
+{
+	if (mesh != nullptr) {
+
+		dmat4 auxModelMat = modelViewMat;
+
+		uploadMvM(modelViewMat);
+
+		// Pintamos el cilindro que hace de contorno del aspa
+		glColor3f(1.0, 0.0, 0.0);
+		gluQuadricDrawStyle(q, GLU_LINE);
+		gluCylinder(this->q, this->r, this->r, this->w, 50, 50);
+
+		// Devolvemos el color al por defecto 
+		glColor3f(1.0, 1.0, 1.0);
+
+		//Rotacion del aspa 
+		//
+		//
+
+		uploadMvM(auxModelMat);
+
+		glColor3d(0.0, 0.0, 0.0);
+		mesh->render();
+		glColor3d(1.0, 1.0, 1.0);
+
+	}
+}
+
+void Rotor::update() {
+	this->angle += this->incrAngle;
+}
+
 //------------------------------------------------------------------------
