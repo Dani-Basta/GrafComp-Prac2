@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   // El profesor ha dicho que todo será en 3D este cuatri
   // scene.init2D();		//CAMBIADO POR NOSOTROS
   //scene.init3D();
-  scene.prac0();
+  scene.noria(10);
 
   glutMainLoop(); 
     
@@ -171,7 +171,7 @@ void key(unsigned char key, int x, int y)
 	  scene.init3D();
 	  break;
   */case '0':
-	  scene.prac0();
+	  scene.noria(12);
 	  break;
   case '2':
 	  scene.prac2();

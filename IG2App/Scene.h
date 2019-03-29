@@ -20,7 +20,7 @@ public:
 	~Scene();
 	void init2D();
 	void init3D();
-	void prac0();
+	void noria(int n);
 	void prac2();
 
     void render(glm::dmat4 const &modelViewMat);

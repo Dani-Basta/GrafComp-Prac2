@@ -5,7 +5,9 @@
 #include <GL/freeglut.h>
 #include <glm.hpp>
 
+
 //-------------------------------------------------------------------------
+
 
 class Mesh 
 {
@@ -52,9 +54,25 @@ protected:
 	glm::dvec3* vertices = nullptr;  // vertex array
 	glm::dvec4* colors = nullptr;    // color array
 	glm::dvec2* texCoords = nullptr; // array de coordenadas de textura.
-
 };
 
+
 //-------------------------------------------------------------------------
+
+
+class MBR : Mesh {
+public:
+
+	MBR(GLint m, GLint n, dvec3 const &perfil);
+
+	void vertexBuilding();
+	void normalize();
+
+protected:
+	GLdouble m, n; // número de paralelos y meridianos
+	dvec3 *perfil; // 
+	dvec3 *normals; 
+};
+
 
 #endif //_H_Scene_H_

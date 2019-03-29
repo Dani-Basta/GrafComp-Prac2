@@ -376,8 +376,8 @@ public:
 
 };
 
-//-------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------
 
 //CHASIS
 
@@ -395,6 +395,9 @@ public:
 
 };
 
+
+//-------------------------------------------------------------------------
+
 //DRON
 
 class Dron : public Entity
@@ -411,6 +414,24 @@ public:
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
 
+};
+
+
+//-------------------------------------------------------------------------
+
+// ESFERA
+
+class Esfera : public Entity 
+{
+protected:
+	GLdouble r;    //radio de la esfera
+	GLdouble m, n; //número de paralelos y meridianos
+	dvec3 *perfil;
+public:
+	Esfera(GLdouble r, GLdouble m, GLdouble n);
+	~Esfera();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
 };
 
 #endif //_H_Entities_H_

@@ -71,7 +71,7 @@ void Scene::init3D() {
 
 }
 
-void Scene::prac0() {
+void Scene::noria(int n) {
 
 	grObjects.clear();
 
@@ -82,7 +82,7 @@ void Scene::prac0() {
 
 	grObjects.push_back(new EjesRGB(200.0));
 
-	int n = 10;
+	//int n = 10;
 	GLdouble gradesIncr = 360 / n;
 	GLdouble grades = 0;
 
@@ -107,7 +107,7 @@ void Scene::prac2() {
 	//grObjects.push_back(new Rotor(100, 50, true));
 	//grObjects.push_back(new Chasis(10,100));
 	//grObjects.push_back(new CuboTapado(10, 100));
-	grObjects.push_back(new Dron(50, 20, 40, 200));
+	grObjects.push_back(new Dron(50, 20, 40, 250));
 
 }
 

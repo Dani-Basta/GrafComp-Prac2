@@ -977,3 +977,24 @@ void Dron::update() {
 	this->rot3->update();
 	this->rot4->update();
 }
+
+//------------------------------------------------------------------------
+
+
+//Esfera
+
+Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n)
+{
+	GLdouble r;    //radio de la esfera
+}
+
+Esfera::~Esfera()
+{
+}
+
+void Esfera::render(dmat4 const &modelViewMat)
+{
+
+}
+
+void Esfera::update() { }
