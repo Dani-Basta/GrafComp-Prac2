@@ -64,11 +64,33 @@ void Scene::init3D() {
 	
 	//grObjects.push_back(new RectanguloTexCor(500, 200, 2, 3));
 	grObjects.push_back(new EstrellaTexCor(60, 8, 30, 30));
-	grObjects.push_back(new CajaTexCor(60));
+	grObjects.push_back(new CajaTexCor(60,60));
 	
 	grObjects.push_back(new Foto());
 
 
+}
+
+void Scene::prac0() {
+
+	grObjects.clear();
+
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	glEnable(GL_TEXTURE_2D);
+
+	grObjects.push_back(new EjesRGB(200.0));
+
+	int n = 4;
+	GLdouble gradesIncr = 360 / n;
+	GLdouble grades = 0;
+
+	for (int i = 0; i < n; i++) {
+		grObjects.push_back(new Cangilon(80, 90, 250, grades));
+		grObjects.push_back(new AspaNoria(10, 5, 80, 90, 50, grades));
+		grades = grades + gradesIncr;
+	}
 }
 
 //-------------------------------------------------------------------------

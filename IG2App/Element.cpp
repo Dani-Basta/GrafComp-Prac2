@@ -20,7 +20,7 @@ void GrElement::render(glm::dmat4 const& modelViewMat)
 	if (entity != nullptr) {
 		setMvM(modelViewMat);
 		
-		entity->render();
+		entity->render(modelViewMat);
 		
 	}
 }

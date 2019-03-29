@@ -398,7 +398,7 @@ void Estrella3D::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = dmat4 const &modelViewMat;
+		dmat4 auxModelMat = modelViewMat;
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3d(1.0, 0.0, 0.0); //Establecemos los colores.
@@ -436,10 +436,10 @@ void Estrella3D::update() {
 
 //CUBO 3D
 
-Cubo3D::Cubo3D(GLdouble l) : Entity()
+Cubo3D::Cubo3D(GLdouble h, GLdouble w) : Entity()
 {
-	mesh = Mesh::generaContCubo(l);
-	auxiliarMesh = Mesh::generaSueloCubo(l);
+	mesh = Mesh::generaCubo(h, w);
+	auxiliarMesh = Mesh::generaSueloCubo(h, w);
 }
 
 Cubo3D::~Cubo3D()
@@ -473,7 +473,6 @@ void Cubo3D::update() {
 }
 
 //------------------------------------------------------------------------
-
 
 
 //RECTANGULO TEXCOR
@@ -565,14 +564,15 @@ void EstrellaTexCor::update() {
 	this->angle += this->incrAngle;
 }
 
+
 //------------------------------------------------------------------------
 
 //CAJATEXCOR
 
-CajaTexCor::CajaTexCor(GLdouble l) : Entity()
+CajaTexCor::CajaTexCor(GLdouble h, GLdouble w) : Entity()
 {
-	mesh = Mesh::generaCajaTexCor(l);
-	auxiliarMesh = Mesh::generaSueloTexCor(l);
+	mesh = Mesh::generaCajaTexCor(h, w);
+	auxiliarMesh = Mesh::generaSueloTexCor(h, w);
 	texture.load("papelE.bmp");
 	textureAux.load("container.bmp");
 }
@@ -612,6 +612,7 @@ void CajaTexCor::update() {
 
 //------------------------------------------------------------------------
 
+
 //FOTO
 
 Foto::Foto() : Entity()
@@ -644,20 +645,38 @@ void Foto::update() {
 	texture.loadColorBuffer();
 }
 
-//------------------------------------------------------------------------
 
-//CANGILON
 
-Cangilon::Cangilon(GLdouble l) : CajaTexCor(l)
+//-------------------------------------------------------------------------
+/*
+
+
+	PARTE 2 DE LA ASIGNATURA.
+
+
+*/
+//-------------------------------------------------------------------------
+
+
+//CANGILON	
+
+Cangilon::Cangilon(GLdouble h, GLdouble w, GLdouble pos, GLdouble grade) : CajaTexCor(h, w)
 {
-	this->angle = 0;
-	this->incrAngle = 3;
+	this->angle = grade;
+	this->incrAngle = 2;
+	this->pos = pos;
+	this->h = h;
+	this->w = w;
+	mesh = Mesh::generaCajaTexCor(h, w);
+	auxiliarMesh = Mesh::generaSueloTexCor(h, w);
+	texture.load("papelE.bmp");
+	textureAux.load("container.bmp");
 }
 
 Cangilon::~Cangilon()
 {
 	delete mesh; mesh = nullptr;
-};
+}
 
 void Cangilon::render(dmat4 const &modelViewMat)
 {
@@ -665,16 +684,33 @@ void Cangilon::render(dmat4 const &modelViewMat)
 
 		dmat4 auxModelMat = modelViewMat;
 
-		//Traslación para la animación 3D
-		auxModelMat = translate(auxModelMat, dvec3(2 * cos(radians(this->angle)), 2 * sin(radians(this->angle)), 0.0));
+		//Traslación para centrar el cangilon.
+		auxModelMat = translate(auxModelMat, dvec3(-w / 2, -h / 2, -w / 2));
 
-		texture.bind(GL_REPLACE);
+		//Traslación para que realice la animación.
+		//GLdouble R = pos;
+		auxModelMat = translate(auxModelMat, dvec3(this->pos*cos(radians(this->angle)), this->pos*sin(radians(this->angle)), 0));
 
+		//Renderizamos solo el interior.
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		textureAux.bind(GL_REPLACE);				//Importante para añadir la textura.
 		uploadMvM(auxModelMat);
-
-		__super::render(auxModelMat);
-
+		mesh->render();  //Dibujamos el cubo.
+		textureAux.unbind();
+		texture.bind(GL_REPLACE);
+		auxiliarMesh->render();
 		texture.unbind();
+
+		//Renderizamos el exterior.
+		glCullFace(GL_BACK);
+		textureAux.bind(GL_REPLACE);
+		uploadMvM(auxModelMat);
+		mesh->render();  //Dibujamos el cubo.
+		auxiliarMesh->render();
+		textureAux.unbind();
+
+		glDisable(GL_CULL_FACE);
 	}
 }
 
@@ -682,22 +718,81 @@ void Cangilon::update() {
 	this->angle += this->incrAngle;
 }
 
+
 //------------------------------------------------------------------------
+
+
+//ASPA DE LA NORIA.
+
+AspaNoria::AspaNoria(GLdouble h, GLdouble w, GLdouble hc, GLdouble wc, GLdouble esc, GLdouble grade) : Cubo3D(h, w)
+{
+	this->hc = hc;
+	this->wc = wc;
+	this->esc = esc;
+	this->angle = grade;
+	this->incrAngle = 2;
+	mesh = Mesh::generaCajaTexCor(h, w);
+	auxiliarMesh = Mesh::generaSueloTexCor(h, w);
+}
+
+AspaNoria::~AspaNoria()
+{
+	delete mesh; mesh = nullptr;
+}
+
+void AspaNoria::render(dmat4 const &modelViewMat)
+{
+	if (mesh != nullptr) {
+
+		dmat4 auxModelMat = modelViewMat;
+		glColor3d(0, 0, 0);
+
+		//Realizamos la rotación para que en lugar de estar alineado con el eje z, lo esté con el eje x.
+		auxModelMat = rotate(auxModelMat, radians(90.0), dvec3(0, 1, 0));
+
+		//Rotación asociada al giro de las aspas.
+		auxModelMat = rotate(auxModelMat, radians(-this->angle), dvec3(1, 0, 0));
+
+		auxModelMat = scale(auxModelMat, dvec3(1, 1, esc));
+
+		//Trasladamos para renderizar la primera aspa.
+		auxModelMat = translate(auxModelMat, dvec3(this->wc / 2, 0, 0));
+		uploadMvM(auxModelMat);
+		mesh->render();
+		auxiliarMesh->render();
+
+
+		//Trasladamos para renderizar la segunda aspa.
+		auxModelMat = translate(auxModelMat, dvec3(-this->wc, 0, 0));
+		uploadMvM(auxModelMat);
+		mesh->render();
+		auxiliarMesh->render();
+
+	}
+}
+
+void AspaNoria::update() {
+	this->angle += this->incrAngle;
+}
+
+
+//------------------------------------------------------------------------
+
 
 //ROTOR
 
-Rotor::Rotor(GLdouble r, GLdouble w)
+Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise)
 {	
 	this->r = r;
 	this->w = w;
 	this->angle = 0;
-	this->incrAngle = 3;
+	this->incrAngle = clockwise ? -3 : 3;
 }
 
 Rotor::~Rotor()
 {
 	delete mesh; mesh = nullptr;
-};
+}
 
 void Rotor::render(dmat4 const &modelViewMat)
 {

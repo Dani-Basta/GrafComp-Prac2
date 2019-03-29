@@ -7,9 +7,6 @@
 
 //-------------------------------------------------------------------------
 
-
-
-
 class Mesh 
 {
 public:
@@ -23,13 +20,21 @@ public:
 	static Mesh* generaRectangulo(GLdouble w, GLdouble h); //Genera un rectangulo 2D de altura h y anchura w.
 	static Mesh* generaRectanguloRGB(GLdouble w, GLdouble h); //Genera el rectangulo RGB utilizando la función generaRectangulo.
 	static Mesh* generaEstrella3D(GLdouble re, GLdouble np, GLdouble h,GLdouble ri);  //Genera la estrella 3D descrita en el enunciado.
-	static Mesh* generaContCubo(GLdouble l); //Para generar el cubo descrito en el enunciado.
-	static Mesh* generaSueloCubo(GLdouble l); //Para generar el suelo (rectangulo) del cubo anterior.
-	static Mesh* generaRectanguloTexCor(GLdouble w, GLdouble h, GLuint rw, GLuint rh); 
+	//static Mesh* generaContCubo(GLdouble l); //Para generar el cubo descrito en el enunciado.
+	//static Mesh* generaSueloCubo(GLdouble l); //Para generar el suelo (rectangulo) del cubo anterior.
+	static Mesh* generaRectanguloTexCor(GLdouble w, GLdouble h, GLuint rw, GLuint rh);
 	static Mesh* generaEstrellaTexCor(GLdouble r, GLdouble nL, GLdouble	h, GLdouble ri);
-	static Mesh* generaCajaTexCor(GLdouble l);
-	static Mesh* generaSueloTexCor(GLdouble l);
-	static Mesh*  generaFotoTex(GLdouble w, GLdouble h);
+	//static Mesh* generaCajaTexCor(GLdouble l);
+	//static Mesh* generaSueloTexCor(GLdouble l);
+	static Mesh* generaFotoTex(GLdouble w, GLdouble h);
+
+	//Segunda parte
+
+	static Mesh* generaCubo(GLdouble h, GLdouble w); //Cubo que hace la distinción entre profundidad y altura.
+	static Mesh* generaSueloCubo(GLdouble h, GLdouble w);
+	static Mesh* generaCajaTexCor(GLdouble h, GLdouble w);
+	static Mesh* generaSueloTexCor(GLdouble h, GLdouble w);
+
 
 	Mesh(void) { };
 	~Mesh(void);

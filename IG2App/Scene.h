@@ -20,8 +20,9 @@ public:
 	~Scene();
 	void init2D();
 	void init3D();
+	void prac0();
 
-    void render(dmat4 const &modelViewMat);
+    void render(glm::dmat4 const &modelViewMat);
 	void update(GLuint timeElapsed);
 	void update();
 

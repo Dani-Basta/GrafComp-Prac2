@@ -102,7 +102,7 @@ Mesh * Mesh::generaPoliespiral(glm::dvec2 verIni, GLdouble angIni, GLdouble incr
 
 	m->vertices[0] = dvec3(x, y, 0); //Es 2D, de modo que z sería 0.
 
-	for (int i = 1; i < m->numVertices; i++) {
+	for (unsigned i = 1; i < m->numVertices; i++) {
 
 		angIni += incrAng;
 		ladoIni += incrLado;
@@ -121,8 +121,6 @@ Mesh * Mesh::generaPoliespiral(glm::dvec2 verIni, GLdouble angIni, GLdouble incr
 
 Mesh * Mesh::generaDragon(GLuint numVert)
 {
-	GLdouble x, y;
-
 	Mesh* m = new Mesh();
 	m->primitive = GL_POINTS;
 	m->numVertices = numVert;
@@ -131,7 +129,7 @@ Mesh * Mesh::generaDragon(GLuint numVert)
 
 	m->vertices[0] = dvec3(0.0, 0.0, 0.0);
 
-	for (int i = 1; i < numVert; i++) {
+	for (unsigned i = 1; i < numVert; i++) {
 		if ((rand() / double(RAND_MAX)) < 0.787473)  // T1
 			m->vertices[i] = dvec3(0.824074 * m->vertices[i - 1].x + 0.281482 * m->vertices[i - 1].y - 0.882290,
 				-0.212346 * m->vertices[i - 1].x + 0.864198 * m->vertices[i - 1].y - 0.110607,
@@ -169,7 +167,7 @@ Mesh * Mesh::generaTriangulo(GLdouble r)
 	GLdouble incrAng = 120; //EQUIVALENTE A 360 % NUM VERTICES.
 	GLdouble x, y;
 
-	for (int i = 0; i < m->numVertices; i++) {
+	for (unsigned i = 0; i < m->numVertices; i++) {
 		x = centro.x + r * cos(radians(angIni));
 		y = centro.y + r * sin(radians(angIni));
 		
@@ -253,7 +251,7 @@ Mesh*  Mesh::generaEstrella3D(GLdouble re, GLdouble np, GLdouble h, GLdouble ri)
 	m->vertices[0] = dvec3(0, 0, 0);
 	m->vertices[1] = dvec3(re*cos(radians(angIni)), re*sin(radians(angIni)), h);
 
-	for (int i = 2; i <= m->numVertices - 2; i += 2) {
+	for (unsigned i = 2; i <= m->numVertices - 2; i += 2) {
 		angIni += incrAng;
 		m->vertices[i] = dvec3(ri*cos(radians(angIni)), ri*sin(radians(angIni)), h);
 		angIni += incrAng;
@@ -270,7 +268,7 @@ Mesh*  Mesh::generaEstrella3D(GLdouble re, GLdouble np, GLdouble h, GLdouble ri)
 /*
 	GENERA EL CUBO DESCRITO EN EL ENUNCIADO
 */
-
+/*
 Mesh*  Mesh::generaContCubo(GLdouble l) {
 
 	Mesh* m = new Mesh();
@@ -310,7 +308,7 @@ Mesh* Mesh::generaSueloCubo(GLdouble l) {
 	
 	return m;
 }
-
+*/
 
 //-------------------------------------------------------------------------
 
@@ -355,7 +353,7 @@ Mesh*  Mesh::generaEstrellaTexCor(GLdouble r, GLdouble nL, GLdouble	h, GLdouble 
 	m->texCoords[0] = dvec2(0, 0);
 	m->texCoords[1] = dvec3(0.5*cos(radians(angIni)), 0.5*sin(radians(angIni)), h);
 
-	for (int i = 2; i <= m->numVertices - 2; i += 2) {
+	for (unsigned i = 2; i <= m->numVertices - 2; i += 2) {
 		angIni += incrAng;
 		m->texCoords[i] = dvec3(ri*cos(radians(angIni)), ri*sin(radians(angIni)), h);
 		angIni += incrAng;
@@ -371,9 +369,9 @@ Mesh*  Mesh::generaEstrellaTexCor(GLdouble r, GLdouble nL, GLdouble	h, GLdouble 
 	GENERA EL CUBO TEXCOR
 */
 
-Mesh*  Mesh::generaCajaTexCor(GLdouble l) {
+Mesh*  Mesh::generaCajaTexCor(GLdouble h, GLdouble w) {
 
-	Mesh* m = generaContCubo(l);
+	Mesh* m = generaCubo(h, w);
 	m->texCoords = new dvec2[m->numVertices];
 	
 	m->texCoords[0] = dvec2(1,0);
@@ -390,8 +388,8 @@ Mesh*  Mesh::generaCajaTexCor(GLdouble l) {
 	return m;
 }
 
-Mesh* Mesh::generaSueloTexCor(GLdouble l) {
-	Mesh* m = generaSueloCubo(l);
+Mesh* Mesh::generaSueloTexCor(GLdouble h, GLdouble w) {
+	Mesh* m = generaSueloCubo(h, w);
 	m->texCoords = new dvec2[m->numVertices];
 
 	m->texCoords[0] = dvec2(1, 0);
@@ -419,4 +417,56 @@ Mesh*  Mesh:: generaFotoTex(GLdouble w, GLdouble h) {
 		m->texCoords[3] = dvec2(1, 0);
 
 		return m;
+}
+
+
+//-------------------------------------------------------------------------
+
+	//PARTE 2 DE LA ASIGNATURA.
+
+//-------------------------------------------------------------------------
+
+
+/*
+	GENERA EL CUBO CON UNA CIERTA PROFUNDIDAD Y ALTURA.
+*/
+
+Mesh*  Mesh::generaCubo(GLdouble h, GLdouble w) {
+
+	Mesh* m = new Mesh();
+
+	m->primitive = GL_TRIANGLE_STRIP;
+	m->numVertices = 10; // 8 + 2 para cerrar el cubo.	
+
+	m->vertices = new dvec3[m->numVertices];
+
+	m->vertices[0] = dvec3(0, h, w);
+	m->vertices[1] = dvec3(0, 0, w);
+	m->vertices[2] = dvec3(w, h, w);
+	m->vertices[3] = dvec3(w, 0, w);
+	m->vertices[4] = dvec3(w, h, 0);
+	m->vertices[5] = dvec3(w, 0, 0);
+	m->vertices[6] = dvec3(0, h, 0);
+	m->vertices[7] = dvec3(0, 0, 0);
+	m->vertices[8] = dvec3(0, h, w);
+	m->vertices[9] = dvec3(0, 0, w);;
+
+
+	return m;
+}
+
+Mesh* Mesh::generaSueloCubo(GLdouble h, GLdouble w) {
+	Mesh* m = new Mesh();
+
+	m->primitive = GL_TRIANGLE_STRIP;
+	m->numVertices = 4;
+	m->vertices = new dvec3[m->numVertices];
+
+	GLdouble z = w / 2;
+
+	m->vertices[0] = dvec3(0, 0, w);
+	m->vertices[1] = dvec3(0, 0, 0);
+	m->vertices[2] = dvec3(w, 0, w);
+	m->vertices[3] = dvec3(w, 0, 0);
+	return m;
 }

@@ -166,11 +166,11 @@ void key(unsigned char key, int x, int y)
     // Se deja aquí para hacer pruebas, pero en principio sobra
 	  scene.init2D();
 	  break;
-
   case '3':
 	  scene.init3D();
 	  break;
-
+  case '0':
+	  scene.prac0();
   default:
 	  need_redisplay = false;
     break;

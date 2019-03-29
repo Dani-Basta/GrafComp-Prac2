@@ -122,7 +122,7 @@ posición, lo ubicamos en el centro y lo desplazamos en el render.
 class EjesRGB : public Entity 
 {
 public:
-	EjesRGB(glm::GLdouble l);
+	EjesRGB(GLdouble l);
 	~EjesRGB();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
@@ -228,10 +228,8 @@ public:
 
 class Cubo3D : public Entity
 {
-
-
 public:
-	Cubo3D(GLdouble l);
+	Cubo3D(GLdouble h, GLdouble w);
 	~Cubo3D();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
@@ -244,7 +242,6 @@ public:
 
 class RectanguloTexCor : public Entity
 {
-
 public:
 	RectanguloTexCor(GLdouble w, GLdouble h, GLuint	rw, GLuint rh);
 	~RectanguloTexCor();
@@ -278,7 +275,7 @@ class CajaTexCor : public Entity
 {
 
 public:
-	CajaTexCor(GLdouble l);
+	CajaTexCor(GLdouble h, GLdouble w);
 	~CajaTexCor();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
@@ -299,18 +296,49 @@ public:
 	virtual void update();
 };
 
+
+
 //-------------------------------------------------------------------------
+/*
+
+
+	PARTE 2 DE LA ASIGNATURA.
+
+
+*/
+//-------------------------------------------------------------------------
+
 
 //CANGILON	
 
 class Cangilon : public CajaTexCor
 {
 protected:
-	GLdouble angle;
-	GLdouble incrAngle;
+	GLdouble w, h;
+	GLdouble pos; //Posición en el eje X que estará la caja.
+	GLdouble angle, incrAngle;
+
 public:
-	Cangilon(GLdouble l);
+	Cangilon(GLdouble h, GLdouble w, GLdouble pos, GLdouble grade);
 	~Cangilon();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+};
+
+//-------------------------------------------------------------------------
+
+//Aspa Noria
+
+class AspaNoria : public Cubo3D
+{
+protected:
+	GLdouble hc;		//Altura del cangilon asociado a las aspas.
+	GLdouble wc;		//Anchura del cangilon asociado a las aspas.
+	GLdouble esc;		//Factor de escalado.
+	GLdouble angle, incrAngle;
+public:
+	AspaNoria(GLdouble h, GLdouble w, GLdouble hc, GLdouble wc, GLdouble esc, GLdouble grade);
+	~AspaNoria();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
 };
@@ -327,7 +355,8 @@ protected:
 	GLdouble incrAngle;
 
 public:
-	Rotor(GLdouble r, GLdouble w); // r is the radius of the sphere
+	Rotor(GLdouble r, GLdouble w, bool clockwise); // r is the radius of the sphere
+	~Rotor();
 	void render(glm::dmat4 const& modelViewMat);
 	virtual void update();
 
