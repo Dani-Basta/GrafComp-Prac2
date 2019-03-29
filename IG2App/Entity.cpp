@@ -12,12 +12,14 @@ De forma predeterminada se aplicará sobre modelMat y modelViewMat. Por lo tanto,
 cuando llamemos a modelMat, se cargará otra cosa distinta.
 
 */
+
 void Entity::uploadMvM(dmat4 const& modelViewMat) const
 { 
 	dmat4 aMat = modelViewMat * modelMat;
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixd(value_ptr(aMat));
 }
+
 //-------------------------------------------------------------------------
 
 
@@ -38,16 +40,16 @@ void Sphere::render(glm::dmat4 const& modelViewMat) {
 	uploadMvM(modelViewMat);
 	
 	// Fijar el color con glColor3f(...);
-	//glColor3f(0.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 0.0);
 	
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	//gluQuadricDrawStyle(q, GLU_LINE);
+	gluQuadricDrawStyle(q, GLU_LINE);
 
-	//gluSphere(q, r, 50, 50);
+	gluSphere(q, r, 50, 50);
 
-	//gluQuadricDrawStyle(q, GLU_FILL);
+	gluQuadricDrawStyle(q, GLU_FILL);
 
-	//glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
 }
 
 void Sphere::update() {}
@@ -68,7 +70,7 @@ void Cylinder::render(glm::dmat4 const& modelViewMat) {
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
 	//gluQuadricDrawStyle(q, GLU_LINE);
 
-	//gluCylinder(q, r1, r2, h, 50, 50);
+	gluCylinder(q, r1, r2, h, 50, 50);
 
 	//gluQuadricDrawStyle(q, GLU_FILL);
 	//glColor3f(1.0, 1.0, 1.0);
@@ -87,15 +89,15 @@ void Disk::render(glm::dmat4 const& modelViewMat) {
 	uploadMvM(modelViewMat);
 
 	// Fijar el color con glColor3f(...);
-	//glColor3f(0.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 0.0);
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	//gluQuadricDrawStyle(q, GLU_LINE);
+	gluQuadricDrawStyle(q, GLU_LINE);
 
-	//(q, r1, r2, 50, 50);
+	(q, r1, r2, 50, 50);
 
-	//gluQuadricDrawStyle(q, GLU_FILL);
-	//glColor3f(1.0, 1.0, 1.0);
+	gluQuadricDrawStyle(q, GLU_FILL);
+	glColor3f(1.0, 1.0, 1.0);
 }
 
 void Disk::update() {}
@@ -113,15 +115,15 @@ void PartialDisk::render(glm::dmat4 const & modelViewMat)
 	uploadMvM(modelViewMat);
 
 	// Fijar el color con glColor3f(...);
-	//glColor3f(0.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 0.0);
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	//gluQuadricDrawStyle(q, GLU_LINE);
+	gluQuadricDrawStyle(q, GLU_LINE);
 
-	//gluPartialDisk(q, r1, r2, 50, 50, ini, fin);
+	gluPartialDisk(q, r1, r2, 50, 50, ini, fin);
 
 	//gluQuadricDrawStyle(q, GLU_FILL);
-	//glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
 }
 
 void PartialDisk::update() {}
@@ -821,49 +823,65 @@ void AspaNoria::update() {
 
 //ROTOR
 
-Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise)
+Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise, bool forceColor)
 {	
 	this->r = r;
 	this->w = w;
 	this->angle = 0;
-	this->incrAngle = clockwise ? -3 : 3;
+	this->incrAngle = clockwise ? -37 : 37;
+	this->mesh = Mesh::generaRectangulo(2 * r, w);
+	this->forceColor = forceColor;
+	this->cil = new Cylinder(r, r, w);
 }
 
 Rotor::~Rotor()
 {
 	delete mesh; mesh = nullptr;
+	delete cil; cil = nullptr;
 }
 
 void Rotor::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		uploadMvM(modelViewMat);
+		dmat4 auxModelMat = modelViewMat;
+
+		auxModelMat = rotate(auxModelMat, radians(-90.0), dvec3(1, 0, 0));
 
 		// Pintamos el cilindro que hace de contorno del aspa
-		glColor3f(1.0, 0.0, 0.0);
-		//gluQuadricDrawStyle(q, GLU_LINE);
+		if(forceColor)
+			glColor3f(1.0, 0.0, 0.0);
+		gluQuadricDrawStyle(q, GLU_LINE);
+		//gluCylinder(this->q, this->r, this->r, this->w, 50, 50);
+		this->cil->render(auxModelMat);
 		gluQuadricDrawStyle(q, GLU_FILL);
-		gluCylinder(q, r, r, w, 50, 50);
-
 		// Devolvemos el color al por defecto 
-		//glColor3f(1.0, 1.0, 1.0);
+		if (forceColor)
+			glColor3f(1.0, 1.0, 1.0);
+
+		uploadMvM(auxModelMat);
+		
+
+		auxModelMat = translate(auxModelMat, dvec3(0, 0, this->w / 2));
+
+		auxModelMat = rotate(auxModelMat, radians(90.0), dvec3(1, 0, 0));
 
 		//Rotacion del aspa 
-		//
-		//
+		auxModelMat = rotate(auxModelMat, radians(this->angle), dvec3(0, 1, 0));
 
-		//uploadMvM(auxModelMat);
+		uploadMvM(auxModelMat);
 
-		//glColor3d(0.0, 0.0, 0.0);
-		//mesh->render();
-		//glColor3d(1.0, 1.0, 1.0);
+		glColor3d(0.0, 0.0, 0.0);
+		mesh->render();
+		glColor3d(1.0, 1.0, 1.0);
+
+
 
 	}
 }
 
 void Rotor::update() {
-	//this->angle += this->incrAngle;
+	this->angle += this->incrAngle;
 }
 
 //------------------------------------------------------------------------
@@ -883,6 +901,8 @@ Chasis::Chasis(GLdouble escH, GLdouble escW) : CuboTapado(1, 1)
 Chasis::~Chasis()
 {
 	delete mesh; mesh = nullptr;
+	delete auxiliarMesh; auxiliarMesh = nullptr;
+	delete auxiliarMesh2; auxiliarMesh2 = nullptr;
 }
 
 void Chasis::render(dmat4 const &modelViewMat)
@@ -907,6 +927,53 @@ void Chasis::render(dmat4 const &modelViewMat)
 	}
 }
 
-void Chasis::update() {
-	//this->angle += this->incrAngle;
+void Chasis::update() { }
+
+//------------------------------------------------------------------------
+
+
+//Dron
+
+Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW)
+{
+	this->r = r;
+	this->w = w;
+	this->escH = escH;
+	this->escW = escW;
+	this->chasis = new Chasis(escH, escW);
+	this->rot1 = new Rotor(r, w, true, false);
+	this->rot2 = new Rotor(r, w, false, false);
+	this->rot3 = new Rotor(r, w, false, false);
+	this->rot4 = new Rotor(r, w, true, false);
+}
+
+Dron::~Dron()
+{
+	delete chasis; chasis = nullptr;
+	delete rot1; rot1 = nullptr;
+	delete rot2; rot2 = nullptr;
+	delete rot3; rot3 = nullptr;
+	delete rot4; rot4 = nullptr;
+}
+
+void Dron::render(dmat4 const &modelViewMat)
+{
+	this->chasis->render(modelViewMat);
+
+	glColor3f(1.0, 0.0, 0.0);
+	this->rot1->render(translate(modelViewMat, dvec3(-this->escW/2, this->escH/2, -this->escW / 2) ) );
+	glColor3f(1.0, 0.0, 0.0);
+	this->rot2->render(translate(modelViewMat, dvec3(this->escW / 2, this->escH / 2, -this->escW / 2)));
+	glColor3f(0.0, 1.0, 0.0);
+	this->rot3->render(translate(modelViewMat, dvec3(-this->escW / 2, this->escH / 2, this->escW / 2)));
+	glColor3f(0.0, 1.0, 0.0);
+	this->rot4->render(translate(modelViewMat, dvec3(this->escW / 2, this->escH / 2, this->escW / 2)));
+	glColor3f(0.0, 0.0, 0.0);
+}
+
+void Dron::update() {
+	this->rot1->update();
+	this->rot2->update();
+	this->rot3->update();
+	this->rot4->update();
 }

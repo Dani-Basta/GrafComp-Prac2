@@ -457,6 +457,8 @@ Mesh*  Mesh::generaCubo(GLdouble h, GLdouble w) {
 	return m;
 }
 
+//-------------------------------------------------------------------------
+
 Mesh* Mesh::generaSueloCubo(GLdouble h, GLdouble w) {
 	Mesh* m = new Mesh();
 
@@ -471,6 +473,8 @@ Mesh* Mesh::generaSueloCubo(GLdouble h, GLdouble w) {
 	return m;
 }
 
+//-------------------------------------------------------------------------
+
 Mesh* Mesh::generaTapaCubo(GLdouble h, GLdouble w) {
 	Mesh* m = new Mesh();
 
@@ -484,3 +488,6 @@ Mesh* Mesh::generaTapaCubo(GLdouble h, GLdouble w) {
 	m->vertices[3] =  dvec3(w, h, 0);
 	return m;
 }
+
+//-------------------------------------------------------------------------
+

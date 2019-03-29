@@ -366,9 +366,10 @@ protected:
 	GLdouble r, w;
 	GLdouble angle;
 	GLdouble incrAngle;
-
+	bool forceColor;
+	Cylinder *cil;
 public:
-	Rotor(GLdouble r, GLdouble w, bool clockwise); // r is the radius of the sphere
+	Rotor(GLdouble r, GLdouble w, bool clockwise, bool forceColor); // r is the radius of the sphere
 	~Rotor();
 	void render(glm::dmat4 const& modelViewMat);
 	virtual void update();
@@ -393,4 +394,23 @@ public:
 	virtual void update();
 
 };
+
+//DRON
+
+class Dron : public Entity
+{
+protected:
+	GLdouble escH;		//Factor de escalado en altura.
+	GLdouble escW;		//Factor de escalado en anchura.
+	GLdouble r, w;
+	Chasis* chasis = nullptr;
+	Rotor *rot1 = nullptr, *rot2 = nullptr, *rot3 = nullptr, *rot4 = nullptr;
+public:
+	Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
+	~Dron();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+
+};
+
 #endif //_H_Entities_H_
