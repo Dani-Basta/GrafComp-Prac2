@@ -34,6 +34,7 @@ protected:
 
 	Mesh* mesh = nullptr;   // surface mesh
 	Mesh* auxiliarMesh = nullptr; // mesh auxiliar para dibujar el rectángulo que será el suelo de la caja.
+	Mesh* auxiliarMesh2 = nullptr; 
 
 	glm::dmat4 modelMat;    // modeling matrix
 
@@ -237,6 +238,19 @@ public:
 
 //-------------------------------------------------------------------------
 
+//CUBO 3D
+
+class CuboTapado : public Entity
+{
+public:
+	CuboTapado(GLdouble h, GLdouble w);
+	~CuboTapado();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+};
+
+//-------------------------------------------------------------------------
+
 
 //RECTANGULO TEXCOR
 
@@ -270,7 +284,6 @@ public:
 //-------------------------------------------------------------------------
 
 //CAJA TEXCOR
-
 class CajaTexCor : public Entity
 {
 
@@ -365,4 +378,19 @@ public:
 //-------------------------------------------------------------------------
 
 
+//CHASIS
+
+class Chasis : public CuboTapado
+{
+protected:
+	GLdouble escH;		//Factor de escalado en altura.
+	GLdouble escW;		//Factor de escalado en anchura.
+
+public:
+	Chasis(GLdouble escH, GLdouble escW);
+	~Chasis();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+
+};
 #endif //_H_Entities_H_

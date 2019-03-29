@@ -474,6 +474,46 @@ void Cubo3D::update() {
 
 //------------------------------------------------------------------------
 
+//CUBO TAPADO
+
+CuboTapado::CuboTapado(GLdouble h, GLdouble w) : Entity()
+{
+	mesh = Mesh::generaCubo(h, w);
+	auxiliarMesh = Mesh::generaSueloCubo(h, w);
+	auxiliarMesh2 = Mesh::generaTapaCubo(h, w);
+}
+
+CuboTapado::~CuboTapado()
+{
+	delete mesh; mesh = nullptr;
+};
+
+void CuboTapado::render(dmat4 const &modelViewMat)
+{
+	if (mesh != nullptr) {
+
+		glColor3d(0.0, 0.0, 1.0); //Establecemos los colores.
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+		uploadMvM(modelViewMat);
+
+
+		mesh->render();  //Dibujamos el cubo.
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		auxiliarMesh2->render();
+		auxiliarMesh->render();	//Dibujamos el suelo del cubo.
+
+	}
+}
+
+void CuboTapado::update() {
+}
+
+//------------------------------------------------------------------------
+
 
 //RECTANGULO TEXCOR
 
@@ -798,33 +838,75 @@ void Rotor::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
-
 		uploadMvM(modelViewMat);
 
 		// Pintamos el cilindro que hace de contorno del aspa
 		glColor3f(1.0, 0.0, 0.0);
-		gluQuadricDrawStyle(q, GLU_LINE);
-		gluCylinder(this->q, this->r, this->r, this->w, 50, 50);
+		//gluQuadricDrawStyle(q, GLU_LINE);
+		gluQuadricDrawStyle(q, GLU_FILL);
+		gluCylinder(q, r, r, w, 50, 50);
 
 		// Devolvemos el color al por defecto 
-		glColor3f(1.0, 1.0, 1.0);
+		//glColor3f(1.0, 1.0, 1.0);
 
 		//Rotacion del aspa 
 		//
 		//
 
-		uploadMvM(auxModelMat);
+		//uploadMvM(auxModelMat);
 
-		glColor3d(0.0, 0.0, 0.0);
-		mesh->render();
-		glColor3d(1.0, 1.0, 1.0);
+		//glColor3d(0.0, 0.0, 0.0);
+		//mesh->render();
+		//glColor3d(1.0, 1.0, 1.0);
 
 	}
 }
 
 void Rotor::update() {
-	this->angle += this->incrAngle;
+	//this->angle += this->incrAngle;
 }
 
 //------------------------------------------------------------------------
+
+//CHASIS 
+
+Chasis::Chasis(GLdouble escH, GLdouble escW) : CuboTapado(1, 1)
+{
+	this->escH = escH;
+	this->escW = escW;
+
+	mesh = Mesh::generaCubo(1, 1);				//Lo hacemos de 1x1. Luego, escalaremos lo que corresponda.
+	auxiliarMesh = Mesh::generaSueloCubo(1, 1);
+	auxiliarMesh2 = Mesh::generaTapaCubo(1, 1);
+}
+
+Chasis::~Chasis()
+{
+	delete mesh; mesh = nullptr;
+}
+
+void Chasis::render(dmat4 const &modelViewMat)
+{
+	if (mesh != nullptr) {
+
+		dmat4 auxModelMat = modelViewMat;
+		glColor3d(0, 0, 1);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Reestablecemos la opción por defecto.
+
+		//Traslación para ubicar el objeto de modo que el centro esté en 0,0,0
+		auxModelMat = translate(auxModelMat, dvec3(-this->escW / 2, -this->escH/2, -this->escW/2));
+
+		//Escalamos tal y como corresponda.
+		auxModelMat = scale(auxModelMat, dvec3(this->escW, this->escH, this->escW));
+
+		uploadMvM(auxModelMat);
+		mesh->render();
+		auxiliarMesh->render();
+		auxiliarMesh2->render();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reestablecemos la opción por defecto
+	}
+}
+
+void Chasis::update() {
+	//this->angle += this->incrAngle;
+}

@@ -34,6 +34,7 @@ public:
 	static Mesh* generaSueloCubo(GLdouble h, GLdouble w);
 	static Mesh* generaCajaTexCor(GLdouble h, GLdouble w);
 	static Mesh* generaSueloTexCor(GLdouble h, GLdouble w);
+	static Mesh* generaTapaCubo(GLdouble h, GLdouble w);
 
 
 	Mesh(void) { };

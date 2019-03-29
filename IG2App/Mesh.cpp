@@ -400,6 +400,8 @@ Mesh* Mesh::generaSueloTexCor(GLdouble h, GLdouble w) {
 	return m;
 }
 
+
+
 //-------------------------------------------------------------------------
 
 /*
@@ -462,11 +464,23 @@ Mesh* Mesh::generaSueloCubo(GLdouble h, GLdouble w) {
 	m->numVertices = 4;
 	m->vertices = new dvec3[m->numVertices];
 
-	GLdouble z = w / 2;
-
 	m->vertices[0] = dvec3(0, 0, w);
 	m->vertices[1] = dvec3(0, 0, 0);
 	m->vertices[2] = dvec3(w, 0, w);
 	m->vertices[3] = dvec3(w, 0, 0);
+	return m;
+}
+
+Mesh* Mesh::generaTapaCubo(GLdouble h, GLdouble w) {
+	Mesh* m = new Mesh();
+
+	m->primitive = GL_TRIANGLE_STRIP;
+	m->numVertices = 4;
+	m->vertices = new dvec3[m->numVertices];
+
+	m->vertices[0] = dvec3(0, h, w);
+	m->vertices[1] = dvec3(w, h, w);
+	m->vertices[2] = dvec3(0, h, 0);
+	m->vertices[3] =  dvec3(w, h, 0);
 	return m;
 }

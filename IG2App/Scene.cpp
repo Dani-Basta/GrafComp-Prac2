@@ -82,7 +82,7 @@ void Scene::prac0() {
 
 	grObjects.push_back(new EjesRGB(200.0));
 
-	int n = 4;
+	int n = 10;
 	GLdouble gradesIncr = 360 / n;
 	GLdouble grades = 0;
 
@@ -91,6 +91,22 @@ void Scene::prac0() {
 		grObjects.push_back(new AspaNoria(10, 5, 80, 90, 50, grades));
 		grades = grades + gradesIncr;
 	}
+}
+
+void Scene::prac2() {
+
+	grObjects.clear();
+
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	glEnable(GL_TEXTURE_2D);
+
+	grObjects.push_back(new EjesRGB(200.0));
+	//grObjects.push_back(new Rotor(100,100,true));
+	grObjects.push_back(new Chasis(10,100));
+	//grObjects.push_back(new CuboTapado(10, 100));
+
 }
 
 //-------------------------------------------------------------------------

@@ -77,8 +77,9 @@ int main(int argc, char *argv[])
   
   // El profesor ha dicho que todo será en 3D este cuatri
   // scene.init2D();		//CAMBIADO POR NOSOTROS
-  scene.init3D();
-	
+  //scene.init3D();
+  scene.prac0();
+
   glutMainLoop(); 
     
   //cin.ignore(INT_MAX, '\n');  cin.get();  
@@ -161,7 +162,7 @@ void key(unsigned char key, int x, int y)
 	  activated = !activated;
 	  break;
 
-  case '2':
+  /*case '2':
     // Para el intercambio entre escenas 2D y 3D.
     // Se deja aquí para hacer pruebas, pero en principio sobra
 	  scene.init2D();
@@ -169,8 +170,12 @@ void key(unsigned char key, int x, int y)
   case '3':
 	  scene.init3D();
 	  break;
-  case '0':
+  */case '0':
 	  scene.prac0();
+	  break;
+  case '2':
+	  scene.prac2();
+	  break;
   default:
 	  need_redisplay = false;
     break;
