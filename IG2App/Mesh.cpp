@@ -1,11 +1,12 @@
 #include "Mesh.h"
 
+constexpr double PI = 3.14159265;
 
 using namespace glm;
 
 //-------------------------------------------------------------------------
 
-Mesh ::~Mesh(void) 
+Mesh::~Mesh(void) 
 {
   delete[] vertices;  vertices = nullptr;
   delete[] colors;    colors = nullptr;
@@ -489,24 +490,41 @@ Mesh* Mesh::generaTapaCubo(GLdouble h, GLdouble w) {
 	return m;
 }
 
+
 //-------------------------------------------------------------------------
 
-MBR:: MBR(GLint m, GLint n, dvec3 const &perfil) {
+MBR::MBR(GLint m, GLint n, dvec3 * per) {
+	this->m = m;
+	this->n = n;
+	this->perfil = per;
+	this->vertexBuilding();
+	this->normalize();
+}
 
+MBR::~MBR() {
+	Mesh::~Mesh();
+	if (this->perfil != nullptr) {
+		delete[] this->perfil;	this->perfil = nullptr;
+	}
+	if (this->normals != nullptr) {
+		delete[] this->normals;	this->normals = nullptr;
+	}
 }
 
 void MBR::vertexBuilding() {
-	// Definir el arrayverticesde tamaño numVertices(=n*m) 
+	// Definir el array vertices de tamaño numVertices(=n*m) 
 	this->numVertices = this->n * this->m;
+	this->vertices = new dvec3[this->numVertices];
+
 	for (int i=0; i<n; i++) { 
-		// Cada vuelta genera la muestra i-ésimade vértices
-		double theta = i*2*3.14159296 / n; 
+		// Cada vuelta genera la muestra i-ésima de vértices
+		double theta = i*2* PI / n; 
 		double c = cos(theta);
 		double s = sin(theta);
 		// R_y de más abajo es la matriz de rotación sobre el eje Y
 		for (int  j=0; j<m; j++) {
 			int indice=  i*m  +j ;
-			// Aplicar la matriz al punto j-ésimo del    perfil
+			// Aplicar la matriz al punto j-ésimo del perfil
 			double x = c*perfil[j][0] + s*perfil[j][2];        
 			double z = -s*perfil[j][0] + c*perfil[j][2];        
 			dvec3 p = dvec3(x, perfil[j][1], z);
@@ -520,34 +538,42 @@ void MBR::normalize() {
 	// e inicializar sus componentes al vector cero(=dvec3(0,0,0))
 	this->normals = new dvec3[this->numVertices];
 
+	for (size_t i = 0; i < this->numVertices; i++)
+		this->normals[i] = dvec3(0);
+
 	for(int i = 0; i < n; i++)
 		for(int j = 0; j < m-1; j++) {
 			// Recorrido de todos los vértices
 			// Ojo, i<n (obliga a usar %(n*m)) 
 			// y j<m-1 (para excluir los vértices del borde superior)
 			int  indice= i*m + j;
+
 			// Por cada cara en la que el vértice ocupa la esquina 
 			// inferior izquierda, se determinan 3 índices i0, i1, i2 
 			// de 3 vértices consecutivos de esa cara  
-			dvec3 aux0 = vertices[i]; 
-			dvec3 aux1 = vertices[i]; 
-			dvec3 aux2 = vertices[i]; 
-			dvec3 norm =  glm::cross(aux2 – aux1, aux0 – aux1); 
-			normals[i0] += norm; 
+			int i1 = (indice + m) ; i1 = i1 % numVertices;
+			dvec3 aux0 = vertices[indice]; //i0
+			dvec3 aux1 = vertices[i1]; 
+			dvec3 aux2 = vertices[indice+1]; //i2
+
+			dvec3 norm =  glm::cross ( aux2 - aux1 , aux0 - aux1 ) ;
+			normals[indice] += norm;
 			normals[i1] += norm; 
-			normals[i2] += norm; 
+			normals[indice + 1] += norm;
 			//normals[...] += norm; 
 		}  
-	// Fin del forj
+	// Fin del for
 	// Se normalizan todos los vectores normales... 
-	normals[i] = glm::normalize(normals[i]);
+	
+	for (size_t i = 0; i < this->numVertices; i++)
+		this->normals[i] = glm::normalize( (vec3) normals[i]);
 }
 
 void MBR::render() {
 	if (vertices != nullptr) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_DOUBLE, 0, vertices);
-		// Activación de vertexarraysde colores y 
+		// Activación de vertex arrays de colores y 
 		// coordenadas de textura, si hace el caso.
 		// No olvidar desactivarlos
 		if (normals != nullptr) {
@@ -556,18 +582,20 @@ void MBR::render() {
 			primitive = GL_POLYGON; // o GL_LINE_LOOP
 			// Se dan índices de vértices de caras cuadrangulares 
 			for (int i = 0; i < n; i++)
-				// Unir muestra i-ésimacon (i+1)%n-ésima
+				// Unir muestra i-ésima con (i+1)%n-ésima
 				for (int j = 0; j < m - 1; j++) {
 					// Empezar en esquina inferior izquierda de la cara     
-					int indice = i * m + j;
+					unsigned int indice = i * m + j;
 					unsigned int index[] = {indice, 
-											(indice + m) % (n*m), 
-											(indice + m + 1) % (n*m), 
+											(int)(indice + m)     % (int)(n*m), 
+											(int)(indice + m + 1) % (int)(n*m),
 											indice + 1 };
 					glDrawElements(primitive, 4, GL_UNSIGNED_INT, index);
 					}
 			//...
 		}
+
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 }
 

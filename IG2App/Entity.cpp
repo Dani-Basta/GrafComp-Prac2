@@ -3,6 +3,8 @@
 #include <gtc/matrix_transform.hpp>  
 #include <gtc/type_ptr.hpp>
 
+constexpr double PI = 3.14159265;
+
 using namespace glm;
 
 //-------------------------------------------------------------------------
@@ -981,20 +983,76 @@ void Dron::update() {
 //------------------------------------------------------------------------
 
 
-//Esfera
+//Cono
 
-Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n)
+Cone::Cone(GLdouble h, GLdouble r)
 {
-	GLdouble r;    //radio de la esfera
+	this->r = r;    //radio de la base
+	this->h = h;    //altura del cono
+	int m = 3; // m=número de puntos del perfil
+	dvec3* perfil = new dvec3[m];
+	perfil[0] = dvec3(0.0, 0.0, 0.0);
+	perfil[1] = dvec3(r, 0.0, 0.0);
+	perfil[2] = dvec3(0.0, h, 0.0);
+	// this->mesh = new MBR(m, 50, perfil); // No funciona el polimorfismo Mesh-MBR
+	this->mbr = new MBR(m, 100, perfil);
 }
 
-Esfera::~Esfera()
+Cone::~Cone(){
+	if (mesh != nullptr) {
+		delete mesh; mesh = nullptr;
+	}
+	if (mbr != nullptr) {
+		delete mbr; mbr = nullptr;
+	}
+}
+
+void Cone::render(dmat4 const &modelViewMat)
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	uploadMvM(modelViewMat);
+	// mesh->render(); // No funciona el polimorfismo Mesh-MBR
+	mbr->render();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void Cone::update() { }
+
+
+//------------------------------------------------------------------------
+
+
+//Esfera
+
+Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n){
+
+	this->r = r;    // radio de la esfera
+	this->m = m;    // numero de paralelos de la esfera
+	this->n = n;    // numero de meridianos de la esfera
+
+	dvec3* perfil = new dvec3[m];
+
+	GLdouble incrX = PI / (m-1);
+	GLdouble incrY = 2 * r / (m-1);
+
+	for (size_t i = 0; i < m; i++)	
+		perfil[i] = dvec3( sin(i*incrX ) * r , cos(i*incrX)*r, 0.0);
+
+	// this->mesh = new MBR(m, n, perfil); // No funciona el polimorfismo Mesh-MBR
+	this->mbr = new MBR(m, n, perfil);
+
+}
+
+Esfera::~Esfera(){
 }
 
 void Esfera::render(dmat4 const &modelViewMat)
 {
-
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	uploadMvM(modelViewMat);
+	// mesh->render(); // No funciona el polimorfismo Mesh-MBR
+	mbr->render();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Esfera::update() { }

@@ -417,21 +417,45 @@ public:
 };
 
 
+
+//-------------------------------------------------------------------------
+
+// CONO
+
+class Cone : public Entity
+{
+protected:
+	GLdouble r; //radio de la base
+	GLdouble h; //altura del cono
+
+	MBR* mbr = nullptr;
+
+public:
+	Cone(GLdouble h, GLdouble r);
+	~Cone();
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+};
+
+
 //-------------------------------------------------------------------------
 
 // ESFERA
 
-class Esfera : public Entity 
+class Esfera : public Entity
 {
 protected:
 	GLdouble r;    //radio de la esfera
 	GLdouble m, n; //número de paralelos y meridianos
-	dvec3 *perfil;
+
+	MBR* mbr = nullptr;
+
 public:
 	Esfera(GLdouble r, GLdouble m, GLdouble n);
 	~Esfera();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
 };
+
 
 #endif //_H_Entities_H_

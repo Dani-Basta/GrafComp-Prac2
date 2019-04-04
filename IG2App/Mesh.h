@@ -63,15 +63,18 @@ protected:
 class MBR : Mesh {
 public:
 
-	MBR(GLint m, GLint n, dvec3 const &perfil);
+	MBR(GLint m, GLint n, glm::dvec3 * per);
+	~MBR(void);
 
-	void vertexBuilding();
-	void normalize();
+	void vertexBuilding(void);
+	void normalize(void);
+
+	virtual void render();
 
 protected:
 	GLdouble m, n; // número de paralelos y meridianos
-	dvec3 *perfil; // 
-	dvec3 *normals; 
+	glm::dvec3* perfil; // 
+	glm::dvec3* normals;
 };
 
 
