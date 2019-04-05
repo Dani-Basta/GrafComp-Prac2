@@ -104,15 +104,16 @@ void Scene::prac2() {
 
 	grObjects.push_back(new EjesRGB(300.0));
 
-	//grObjects.push_back(new Rotor(100, 50, true));
-	//grObjects.push_back(new Chasis(10,100));
 	//grObjects.push_back(new CuboTapado(10, 100));
 
-	//grObjects.push_back(new Dron(50, 20, 40, 250));
+	//grObjects.push_back(new Rotor(100, 50, true));
+	//grObjects.push_back(new Chasis(10,100));
+
+	//grObjects.push_back(new Dron(40, 15, 30, 250));
 
 	//grObjects.push_back( new Cone(250, 150) );
 
-	grObjects.push_back(new Esfera(200, 50, 50) );
+	grObjects.push_back(new Esfera(100, 50, 50) );
 
 }
 
