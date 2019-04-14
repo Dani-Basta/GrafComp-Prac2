@@ -154,6 +154,10 @@ void key(unsigned char key, int x, int y)
 	  camera.set2D();
 	  break;
 
+  case 'c':
+	  camera.setCenital();
+	  break;
+
   case 'u':
 	  scene.update();
 	  break;

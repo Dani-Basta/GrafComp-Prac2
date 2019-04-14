@@ -1024,7 +1024,7 @@ void Cone::update() { }
 
 //Esfera
 
-Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n){
+Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 
 	this->r = r;    // radio de la esfera
 	this->m = m;    // numero de paralelos de la esfera

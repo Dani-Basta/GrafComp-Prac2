@@ -10,31 +10,38 @@ using namespace glm;
 
 void Camera::set2D() 
 {
-	eye = dvec3(0, 0, 500);
-	look = dvec3(0, 0, 0);
-	up = dvec3(0, 1, 0);
-	viewMat = lookAt(eye, look, up);
+	this->eye = dvec3(0, 0, 500);
+	this->look = dvec3(0, 0, 0);
+	this->up = dvec3(0, 1, 0);
+	this->viewMat = lookAt(eye, look, up);
 }
 
 //-------------------------------------------------------------------------
 
 void Camera::set3D() 
 {
-	//eye = dvec3(500, 500, 500);
-	eye = dvec3(front, front, front);
-	look= dvec3(0, 10, 0);
-	up= dvec3(0, 1, 0);
-	viewMat = lookAt(eye, look, up);
+	this->ang = -45;
+	GLdouble frente = this->radio*cos(radians(this->ang));
+	this->eye = dvec3(frente, frente, frente);
+	this->look= dvec3(0, 10, 0);
+	this->up= dvec3(0, 1, 0);
+	//this->viewMat = lookAt(eye, look, up);
+
+	setVM();	
 }
 
 //-------------------------------------------------------------------------
 
 void Camera::setCenital()
 {
-	dvec3 eye = dvec3(500, 500, 500);
-	dvec3 look = dvec3(0, 0, 0);
-	dvec3 up = dvec3(0, 1, 0);
-	viewMat = lookAt(eye, look, up);
+	this->ang = -90;
+	this->eye = dvec3(0, this->radio, 0);
+	this->look = dvec3(0, 0, 0);
+	this->up = dvec3(0, 0, -1);
+
+	//this->viewMat = lookAt(eye, look, up);
+
+	setVM();
 }
 
 //-------------------------------------------------------------------------
@@ -49,21 +56,21 @@ void Camera::uploadVM() const
 
 void Camera::pitch(GLdouble a) 
 {  
-	viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(1.0, 0, 0));
+	this->viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(1.0, 0, 0));
 }
 
 //-------------------------------------------------------------------------
 
 void Camera::yaw(GLdouble a)
 {
-	viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(0, 1.0, 0));
+	this->viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(0, 1.0, 0));
 }
 
 //-------------------------------------------------------------------------
 
 void Camera::roll(GLdouble a)
 {
-	viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(0, 0, 1.0));
+	this->viewMat = rotate(viewMat, glm::radians(-a), glm::dvec3(0, 0, 1.0));
 }
 
 //-------------------------------------------------------------------------
@@ -84,12 +91,14 @@ void Camera::uploadSize(GLdouble aw, GLdouble ah)
 void Camera::uploadScale(GLdouble s)
 {
 	factScale -= s;
-	if (factScale < 0) factScale = 0.01;
-	projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
-
+	if (factScale < 0) 
+		factScale = 0.01;
 	uploadPM();
 }
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
 void Camera::setAxes(void){
@@ -101,19 +110,21 @@ void Camera::setAxes(void){
 //-------------------------------------------------------------------------
 
 void Camera::setVM(void) {
-	lookAt(eye, look, up);
+	this->viewMat = lookAt(eye, look, up);
 	setAxes();
 }
 
 //-------------------------------------------------------------------------
 
-void Camera::uploadPM() const
+void Camera::uploadPM() 
 {
 	if (this->orto) {
-
+		this -> nearVal = 1.0;
+		this -> projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
 	}
 	else {
-
+		this -> nearVal = 2 * yTop;
+		this -> projMat = frustum(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
 	}
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixd(value_ptr(projMat));
@@ -122,4 +133,59 @@ void Camera::uploadPM() const
 
 //-------------------------------------------------------------------------
 
+void Camera::moveLR(GLdouble cs) {
+	this->eye += u * cs;
+	this->look += u * cs;
+	setVM();
+}
 
+//-------------------------------------------------------------------------
+
+void Camera::moveFB(GLdouble cs) {
+	this->eye += this->front * -cs;
+	this->look += this->front * -cs;
+	setVM();
+}
+
+//-------------------------------------------------------------------------
+
+void Camera::moveUD(GLdouble cs) {
+	this->eye += v * cs;
+	this->look += v * cs;
+	setVM();
+}
+
+//-------------------------------------------------------------------------
+
+void Camera::lookLR(GLdouble cs) {
+	this->look += u * cs;
+	setVM();
+}
+
+//-------------------------------------------------------------------------
+
+void Camera::lookUD(GLdouble cs) {
+	this->look += v * cs;
+	setVM();
+}
+
+//-------------------------------------------------------------------------
+
+void Camera::orbit(GLdouble ax) {
+	this->ang += ax;
+	this->eye.x = look.x + cos(radians(ang)) * radio;
+	this->eye.z = look.z - sin(radians(ang)) * radio;
+	
+	setVM();
+}
+
+//-------------------------------------------------------------------------
+
+void Camera::orbit(GLdouble ax, GLdouble ay) {
+	this -> ang += ax;
+	this -> eye.x = look.x + cos(radians(ang)) * radio;
+	this->eye.y += ay;
+	this -> eye.z = look.z - sin(radians(ang)) * radio;
+	
+	setVM();
+}
