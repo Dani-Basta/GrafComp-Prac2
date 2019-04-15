@@ -15,6 +15,7 @@ public:
 							yTop(avp->getH() / 2.0), yBot(-yTop) { };
 	~Camera() {};
 	Viewport* getVP() { return vp; }
+	void setVP(Viewport* avp) { this->vp = avp; }
 
 	// view matrix (the inverse of modeling matrix)
 	glm::dmat4 const& getViewMat() const { return viewMat; };
@@ -39,7 +40,7 @@ public:
 	void setCenital();
 
 	
-
+	GLdouble xRight, xLeft, yTop, yBot;    // size of scene visible area
 
 	void moveLR(GLdouble cs);
 	void moveFB(GLdouble cs);
@@ -78,7 +79,7 @@ protected:
 	glm::dmat4 const& getProjMat() const { return projMat; };
 	void uploadPM(void);  // transfers projMat to the GPU
 	
-	GLdouble xRight, xLeft, yTop, yBot;    // size of scene visible area
+	
 	GLdouble nearVal = 1, farVal = 10000;  // view volume
 	GLdouble factScale = 1;
 	

@@ -3,7 +3,7 @@
 #include <gtc/matrix_transform.hpp>  
 #include <gtc/type_ptr.hpp>
 
-constexpr double PI = 3.14159265;
+//constexpr double PI = 3.14159265;
 
 using namespace glm;
 
@@ -1032,7 +1032,7 @@ Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 
 	dvec3* perfil = new dvec3[m];
 
-	GLdouble incrX = PI / (m-1);
+	GLdouble incrX = pi<GLdouble>() / (m-1);
 	GLdouble incrY = 2 * r / (m-1);
 
 	for (size_t i = 0; i < m; i++)	
@@ -1044,6 +1044,12 @@ Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 }
 
 Esfera::~Esfera(){
+	if (mesh != nullptr) {
+		delete mesh; mesh = nullptr;
+	}
+	if (mbr != nullptr) {
+		delete mbr; mbr = nullptr;
+	}
 }
 
 void Esfera::render(dmat4 const &modelViewMat)
@@ -1056,3 +1062,111 @@ void Esfera::render(dmat4 const &modelViewMat)
 }
 
 void Esfera::update() { }
+
+//------------------------------------------------------------------------
+
+// ESFERA con un DRON sobrevolando
+
+EsferaDron::EsferaDron(GLdouble r, GLdouble m, GLdouble n) : Esfera(r, m, n) {
+
+	this->angMer = 45.0;
+	this->angPar = 0.0;
+
+	this->dron = new Dron(5, 2, 5, 20);
+}
+
+EsferaDron::~EsferaDron() {
+	//this->esfera->~Esfera();
+	//this->esfera = nullptr;
+	Esfera::~Esfera();
+	this->dron->~Dron();
+	this->dron = nullptr;
+}
+
+void EsferaDron::render(dmat4 const &modelViewMat)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//this->esfera->render(modelViewMat);
+	__super::render(modelViewMat);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glColor3f(1.0, 0.0, 0.0);
+
+	dmat4 rot = modelViewMat;
+	rot = rotate(rot, radians(angMer), dvec3(0, 1, 0));
+	rot = rotate(rot, radians(angPar), dvec3(1, 0, 0));
+	
+	//rot = translate(rot, dvec3(0, (r + 5) * sin(radians(angPar) ), 0));
+	//rot = translate(rot, dvec3(0, (r + 5) * sin(radians(angPar)), 0));
+	
+	rot = translate(rot, dvec3(0.0, this->r +5, 0.0));
+	this->dron->render(rot);
+	glColor3f(0.0, 0.0, 0.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void EsferaDron::update() { 
+	this->dron->update();
+}
+
+void EsferaDron::move(int key) {
+	switch (key) {
+	case GLUT_KEY_RIGHT:
+		this->angMer += 5;
+		break;
+	case GLUT_KEY_LEFT:
+		this->angMer -= 5;
+		break;
+	case GLUT_KEY_UP:
+		this->angPar += 5;
+		break;
+	case GLUT_KEY_DOWN:
+		this->angPar -= 5;
+		break;
+	}
+}
+
+//------------------------------------------------------------------------
+
+// ESFERA con un DRON sobrevolando
+
+DronDrones::DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW) : Dron(r, w, escH, escW) {
+
+	this->factEsc = 0.2;
+	
+	//this->dron = new Dron(factEsc*r, factEsc*w, factEsc*escH, factEsc*escW);
+
+	this->deltaX = (this->escW / 2 ) / factEsc;
+	this->deltaY = (this->escH / 2 + this->w + 5) / factEsc;
+	this->deltaZ = (this->escW / 2) / factEsc;
+}
+
+DronDrones::~DronDrones() {
+	Dron::~Dron();
+	//this->dron->~Dron();
+	//this->dron = nullptr;
+}
+
+void DronDrones::render(dmat4 const &modelViewMat)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	dmat4 escala = scale(modelViewMat, dvec3(factEsc));
+	__super::render(modelViewMat);
+	
+	__super::render(translate(escala, dvec3(-this->deltaX, this->deltaY, -this->deltaZ)));
+	__super::render(translate(escala, dvec3( this->deltaX, this->deltaY, -this->deltaZ)));
+	__super::render(translate(escala, dvec3(-this->deltaX, this->deltaY,  this->deltaZ)));
+	__super::render(translate(escala, dvec3( this->deltaX, this->deltaY,  this->deltaZ)));
+
+	//dmat4 escala = scale(translate(modelViewMat, dvec3(-this->deltaX, this->deltaY, -this->deltaZ)), dvec3(0.2));
+	//this->dron->render(translate(modelViewMat, dvec3(-this->deltaX, this->deltaY, -this->deltaZ) ) );
+	//this->dron->render(translate(modelViewMat, dvec3( this->deltaX, this->deltaY, -this->deltaZ) ) );
+	//this->dron->render(translate(modelViewMat, dvec3(-this->deltaX, this->deltaY,  this->deltaZ) ) );
+	//this->dron->render(translate(modelViewMat, dvec3( this->deltaX, this->deltaY,  this->deltaZ) ) );
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void DronDrones::update() {
+	__super::update();
+	//this->dron->update();
+}

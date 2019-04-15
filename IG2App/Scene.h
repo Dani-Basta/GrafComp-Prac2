@@ -18,18 +18,26 @@ class Scene
 public:
     Scene() { };
 	~Scene();
-	void init2D();
-	void init3D();
+	void init2D(void);
+	void init3D(void);
 	void noria(int n);
-	void prac2();
+	void esferaRev(void);
+	void init(void);
+	void dronDrones(void);
 
     void render(glm::dmat4 const &modelViewMat);
 	void update(GLuint timeElapsed);
-	void update();
+	void update(void);
+
+	void move(int key);
 
 protected:
+	GLuint time = 0;
 
-	  std::vector<Entity*> grObjects;  // Entities (graphics objects) of the scene
+	GLuint umbral = 50;
+
+	std::vector<Entity*> grObjects;  // Entities (graphics objects) of the scene
+	EsferaDron* esfera;  // Entities (graphics objects) of the scene
 };
 
 //-------------------------------------------------------------------------

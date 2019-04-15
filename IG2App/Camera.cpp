@@ -13,7 +13,9 @@ void Camera::set2D()
 	this->eye = dvec3(0, 0, 500);
 	this->look = dvec3(0, 0, 0);
 	this->up = dvec3(0, 1, 0);
-	this->viewMat = lookAt(eye, look, up);
+	//this->viewMat = lookAt(eye, look, up);
+
+	setVM();
 }
 
 //-------------------------------------------------------------------------
@@ -142,8 +144,8 @@ void Camera::moveLR(GLdouble cs) {
 //-------------------------------------------------------------------------
 
 void Camera::moveFB(GLdouble cs) {
-	this->eye += this->front * -cs;
-	this->look += this->front * -cs;
+	this->eye += this->front * cs;
+	this->look += this->front * cs;
 	setVM();
 }
 

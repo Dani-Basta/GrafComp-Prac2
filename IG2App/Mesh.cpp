@@ -1,6 +1,8 @@
 #include "Mesh.h"
 
-constexpr double PI = 3.14159265;
+#include <gtc/type_ptr.hpp> //para usar la constante PI
+
+//constexpr double PI = 3.14159265;
 
 using namespace glm;
 
@@ -518,7 +520,7 @@ void MBR::vertexBuilding() {
 
 	for (int i=0; i<n; i++) { 
 		// Cada vuelta genera la muestra i-ésima de vértices
-		double theta = i*2* PI / n; 
+		double theta = pi<double>() *i*2  / n;
 		double c = cos(theta);
 		double s = sin(theta);
 		// R_y de más abajo es la matriz de rotación sobre el eje Y

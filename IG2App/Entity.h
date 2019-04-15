@@ -11,8 +11,7 @@
 
 //-------------------------------------------------------------------------
 
-class Entity 
-{
+class Entity {
 public:
 	Entity() : modelMat(1.0) { }; 
 	virtual ~Entity() { };
@@ -49,8 +48,7 @@ protected:
 //-------------------------------------------------------------------------
 
 
-class QuadricEntity : public Entity 
-{
+class QuadricEntity : public Entity {
 public:
 	QuadricEntity()  { q = gluNewQuadric(); };
 	~QuadricEntity() { gluDeleteQuadric(q); };
@@ -60,8 +58,7 @@ protected:
 
 //-------------------------------------------------------------------------
 
-class Sphere : public QuadricEntity 
-{
+class Sphere : public QuadricEntity {
 public:
 	Sphere(GLdouble r); // r is the radius of the sphere
 	void render(glm::dmat4 const& modelViewMat);
@@ -72,8 +69,7 @@ protected:
 
 //-------------------------------------------------------------------------
 
-class Cylinder : public QuadricEntity 
-{
+class Cylinder : public QuadricEntity {
 public:
 	Cylinder(GLdouble r1, GLdouble r2, GLdouble h); // r is the radius of the sphere
 	void render(glm::dmat4 const& modelViewMat);
@@ -84,8 +80,7 @@ protected:
 
 //-------------------------------------------------------------------------
 
-class Disk : public QuadricEntity 
-{
+class Disk : public QuadricEntity {
 public:
 	Disk(GLdouble r1, GLdouble r2); // r is the radius of the sphere
 	void render(glm::dmat4 const& modelViewMat);
@@ -96,8 +91,7 @@ protected:
 
 //-------------------------------------------------------------------------
 
-class PartialDisk : public QuadricEntity 
-{
+class PartialDisk : public QuadricEntity {
 public:
 	PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin); // r is the radius of the sphere
 	void render(glm::dmat4 const& modelViewMat);
@@ -120,8 +114,7 @@ posición, lo ubicamos en el centro y lo desplazamos en el render.
 
 //-------------------------------------------------------------------------
 
-class EjesRGB : public Entity 
-{
+class EjesRGB : public Entity {
 public:
 	EjesRGB(GLdouble l);
 	~EjesRGB();
@@ -134,8 +127,7 @@ public:
 
 //POLIESPIRAL
 
-class Poliespiral : public Entity
-{
+class Poliespiral : public Entity {
 public:
 	Poliespiral(glm::dvec2 verIni, GLdouble angIni, GLdouble incrAng, GLdouble ladoIni, GLdouble incrLado, GLuint numVert);
 	~Poliespiral();
@@ -148,8 +140,7 @@ public:
 
 //DRAGON
 
-class Dragon : public Entity
-{
+class Dragon : public Entity {
 public:
 	Dragon(GLuint numVert);
 	~Dragon();
@@ -162,8 +153,7 @@ public:
 
 //TRIANGULO RGB
 
-class TrianguloRGB : public Entity
-{
+class TrianguloRGB : public Entity {
 public:
 	TrianguloRGB(GLdouble r);
 	~TrianguloRGB();
@@ -176,8 +166,7 @@ public:
 
 //RECTANGULO RGB
 
-class RectanguloRGB : public Entity
-{
+class RectanguloRGB : public Entity {
 public:
 	RectanguloRGB(GLdouble w, GLdouble h);
 	~RectanguloRGB();
@@ -190,8 +179,7 @@ public:
 
 //TRIANGULO ANIMADO
 
-class TrianguloAnimado : public Entity
-{
+class TrianguloAnimado : public Entity {
 protected:
 	GLdouble grades = 0;
 	GLdouble incrGr = 3;
@@ -210,8 +198,7 @@ public:
 
 //ESTRELLA 3D
 
-class Estrella3D: public Entity
-{
+class Estrella3D: public Entity {
 protected:
 	GLdouble angle;
 	GLdouble incrAngle;
@@ -227,8 +214,7 @@ public:
 
 //CUBO 3D
 
-class Cubo3D : public Entity
-{
+class Cubo3D : public Entity {
 public:
 	Cubo3D(GLdouble h, GLdouble w);
 	~Cubo3D();
@@ -240,8 +226,7 @@ public:
 
 //CUBO 3D
 
-class CuboTapado : public Entity
-{
+class CuboTapado : public Entity {
 public:
 	CuboTapado(GLdouble h, GLdouble w);
 	~CuboTapado();
@@ -254,8 +239,7 @@ public:
 
 //RECTANGULO TEXCOR
 
-class RectanguloTexCor : public Entity
-{
+class RectanguloTexCor : public Entity {
 public:
 	RectanguloTexCor(GLdouble w, GLdouble h, GLuint	rw, GLuint rh);
 	~RectanguloTexCor();
@@ -268,8 +252,7 @@ public:
 
 //ESTRELLA TEXCOR
 
-class EstrellaTexCor : public Entity
-{
+class EstrellaTexCor : public Entity {
 protected:
 	GLdouble angle;
 	GLdouble incrAngle;
@@ -284,8 +267,7 @@ public:
 //-------------------------------------------------------------------------
 
 //CAJA TEXCOR
-class CajaTexCor : public Entity
-{
+class CajaTexCor : public Entity {
 
 public:
 	CajaTexCor(GLdouble h, GLdouble w);
@@ -299,8 +281,7 @@ public:
 
 //FOTO
 
-class Foto : public Entity
-{
+class Foto : public Entity {
 
 public:
 	Foto();
@@ -324,8 +305,7 @@ public:
 
 //CANGILON	
 
-class Cangilon : public CajaTexCor
-{
+class Cangilon : public CajaTexCor {
 protected:
 	GLdouble w, h;
 	GLdouble pos; //Posición en el eje X que estará la caja.
@@ -342,8 +322,7 @@ public:
 
 //Aspa Noria
 
-class AspaNoria : public Cubo3D
-{
+class AspaNoria : public Cubo3D {
 protected:
 	GLdouble hc;		//Altura del cangilon asociado a las aspas.
 	GLdouble wc;		//Anchura del cangilon asociado a las aspas.
@@ -360,8 +339,7 @@ public:
 
 //ROTOR
 
-class Rotor : public QuadricEntity 
-{
+class Rotor : public QuadricEntity {
 protected:
 	GLdouble r, w;
 	GLdouble angle;
@@ -381,8 +359,7 @@ public:
 
 //CHASIS
 
-class Chasis : public CuboTapado
-{
+class Chasis : public CuboTapado {
 protected:
 	GLdouble escH;		//Factor de escalado en altura.
 	GLdouble escW;		//Factor de escalado en anchura.
@@ -400,8 +377,7 @@ public:
 
 //DRON
 
-class Dron : public Entity
-{
+class Dron : public Entity {
 protected:
 	GLdouble escH;		//Factor de escalado en altura.
 	GLdouble escW;		//Factor de escalado en anchura.
@@ -422,8 +398,7 @@ public:
 
 // CONO
 
-class Cone : public Entity
-{
+class Cone : public Entity {
 protected:
 	GLdouble r; //radio de la base
 	GLdouble h; //altura del cono
@@ -442,8 +417,7 @@ public:
 
 // ESFERA
 
-class Esfera : public Entity
-{
+class Esfera : public Entity {
 protected:
 	GLdouble r;    //radio de la esfera
 	GLdouble m, n; //número de paralelos y meridianos
@@ -457,5 +431,42 @@ public:
 	virtual void update();
 };
 
+//-------------------------------------------------------------------------
+
+// ESFERA con un dron sobrevolando
+
+class EsferaDron : public Esfera {
+protected:
+
+	GLdouble angMer, angPar;
+
+	//Esfera* esfera = nullptr;
+	Dron* dron = nullptr;
+
+public:
+	EsferaDron(GLdouble r, GLdouble m, GLdouble n);
+	~EsferaDron(void);
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+	void move(int key);
+};
+
+//-------------------------------------------------------------------------
+
+// DRON grandote con drones pequeñitos
+
+class DronDrones : public Dron {
+protected:
+
+	//Dron* dron = nullptr;
+	GLdouble factEsc;
+	GLdouble deltaX, deltaY, deltaZ;
+
+public:
+	DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
+	~DronDrones(void);
+	virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void update();
+};
 
 #endif //_H_Entities_H_

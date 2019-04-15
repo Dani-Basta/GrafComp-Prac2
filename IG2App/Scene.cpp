@@ -7,13 +7,6 @@ using namespace glm;
 
 //-------------------------------------------------------------------------
 
-GLuint time = 0;
-
-GLuint umbral = 50;
-
-
-//-------------------------------------------------------------------------
-
 //Escena 2D.
 void Scene::init2D() {
 	// OpenGL basic setting
@@ -41,6 +34,7 @@ void Scene::init2D() {
 	grObjects.push_back(new TrianguloAnimado(40, 0, 0, 15));
 }
 
+//-------------------------------------------------------------------------
 
 //Escena 3D
 void Scene::init3D() {
@@ -71,6 +65,8 @@ void Scene::init3D() {
 
 }
 
+//-------------------------------------------------------------------------
+
 void Scene::noria(int n) {
 
 	grObjects.clear();
@@ -93,7 +89,9 @@ void Scene::noria(int n) {
 	}
 }
 
-void Scene::prac2() {
+//-------------------------------------------------------------------------
+
+void Scene::esferaRev() {
 
 	grObjects.clear();
 
@@ -119,6 +117,42 @@ void Scene::prac2() {
 
 //-------------------------------------------------------------------------
 
+void Scene::init() {
+
+	grObjects.clear();
+
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	glEnable(GL_TEXTURE_2D);
+
+	grObjects.push_back(new EjesRGB(300.0));
+
+	this->esfera = new EsferaDron(200, 51, 51);
+	grObjects.push_back(this->esfera);
+
+}
+
+//-------------------------------------------------------------------------
+
+void Scene::dronDrones() {
+
+	grObjects.clear();
+
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	glEnable(GL_TEXTURE_2D);
+
+	grObjects.push_back(new EjesRGB(300.0));
+
+	grObjects.push_back(new DronDrones(35, 15, 30, 200));
+
+
+}
+
+//-------------------------------------------------------------------------
+
 Scene::~Scene()
 { // free memory and resources   
   
@@ -127,6 +161,7 @@ Scene::~Scene()
 	  delete el;  el = nullptr;
   }
 }
+
 //-------------------------------------------------------------------------
 
 void Scene::render(dmat4 const &modelViewMat)
@@ -136,6 +171,7 @@ void Scene::render(dmat4 const &modelViewMat)
 		el->render(modelViewMat);
 	}
 }
+
 //-------------------------------------------------------------------------
 
 void Scene::update()
@@ -145,6 +181,7 @@ void Scene::update()
 		el->update();
 	}
 }
+
 //-------------------------------------------------------------------------
 
 void Scene::update(GLuint timeElapsed)
@@ -158,6 +195,10 @@ void Scene::update(GLuint timeElapsed)
 	}
 
 }
+
 //-------------------------------------------------------------------------
 
 
+void Scene::move(int key) {
+	this->esfera->move(key);
+}
