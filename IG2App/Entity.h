@@ -443,6 +443,8 @@ protected:
 	//Esfera* esfera = nullptr;
 	Dron* dron = nullptr;
 
+	bool oscilacion = true;
+
 public:
 	EsferaDron(GLdouble r, GLdouble m, GLdouble n);
 	~EsferaDron(void);

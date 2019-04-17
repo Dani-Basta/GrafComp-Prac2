@@ -79,11 +79,11 @@ void Camera::roll(GLdouble a)
 
 void Camera::uploadSize(GLdouble aw, GLdouble ah)
 {
-	xRight = aw / 2.0;
-	xLeft = -xRight;
-	yTop = ah / 2.0;
-	yBot = -yTop;
-	projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
+	this->xRight = aw / 2.0;
+	this->xLeft = -xRight;
+	this->yTop = ah / 2.0;
+	this->yBot = -yTop;
+	//projMat = ortho(xLeft*factScale, xRight*factScale, yBot*factScale, yTop*factScale, nearVal, farVal);
 
 	uploadPM();
 }
@@ -101,6 +101,13 @@ void Camera::uploadScale(GLdouble s)
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+void Camera::changeProj(void) {
+	this->orto = !this->orto;
+	uploadPM();
+}
+
 //-------------------------------------------------------------------------
 
 void Camera::setAxes(void){

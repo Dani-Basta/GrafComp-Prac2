@@ -61,24 +61,24 @@ void doubleScene(void);
 //-------------------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
-cout << "Starting console..." << '\n';
+	cout << "Starting console..." << '\n';
 
-// Initialization
-glutInit(&argc, argv);
+	// Initialization
+	glutInit(&argc, argv);
 
-glutInitContextVersion(3, 3);
-glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);  // GLUT_CORE_PROFILE
-glutInitContextFlags(GLUT_DEBUG);   // GLUT_FORWARD_COMPATIBLE
-  
-glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS); 
-  
-glutInitWindowSize(800, 600);   // window size
-//glutInitWindowPosition (140, 140);
+	glutInitContextVersion(3, 3);
+	glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);  // GLUT_CORE_PROFILE
+	glutInitContextFlags(GLUT_DEBUG);   // GLUT_FORWARD_COMPATIBLE
 
-glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH /*| GLUT_STENCIL*/); // RGBA colors, double buffer, depth buffer and stencil buffer   
-  
-int win = glutCreateWindow("IG2App");  // window's identifier
-  
+	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS); 
+
+	glutInitWindowSize(800, 600);   // window size
+	//glutInitWindowPosition (140, 140);
+
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH /*| GLUT_STENCIL*/); // RGBA colors, double buffer, depth buffer and stencil buffer 
+
+	int win = glutCreateWindow("IG2App");  // window's identifier
+
 	// Callback registration
 	glutReshapeFunc(resize);
 	glutKeyboardFunc(key);
@@ -86,7 +86,7 @@ int win = glutCreateWindow("IG2App");  // window's identifier
 	glutDisplayFunc(display);
 	glutIdleFunc(Update);
 	glutMouseWheelFunc(mouseWheel);
-  
+
 	//callbacks añadidos por nosotros
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
@@ -97,7 +97,7 @@ int win = glutCreateWindow("IG2App");  // window's identifier
 	// after creating the context
 	camera.set3D();
 	cameraAux.set3D();
-  
+
 	// El profesor ha dicho que todo será en 3D este cuatri
 	// scene.init2D();		//CAMBIADO POR NOSOTROS
 	// scene.init3D();
@@ -105,10 +105,10 @@ int win = glutCreateWindow("IG2App");  // window's identifier
 	sceneAux.dronDrones();
 
 	glutMainLoop(); 
-    
+
 	// cin.ignore(INT_MAX, '\n');  cin.get();  
 	glutDestroyWindow(win);  // Destroy the context 
- 
+
 	return 0;
 }
 
@@ -140,8 +140,8 @@ void display() {   // double buffering
 	else if (baldosas)
 		embaldosar(gridRows, gridCols);
 	else {
-		//scene.render(camera.getViewMat());
 		embaldosar(1, 1);
+		//scene.render(camera.getViewMat());
 		//glutPostRedisplay();
 	}
 
@@ -154,14 +154,22 @@ void display() {   // double buffering
 void resize(int newWidth, int newHeight) {
 	// Resize Viewport 
 	if (twoPorts) {
-		viewPort.uploadSize(newWidth/2, newHeight);
-		viewPortAux.uploadSize(newWidth / 2, newHeight);
+		camera.getVP()->uploadSize(newWidth/2, newHeight);
+		camera.getVP()->upload();
+		cameraAux.getVP()->uploadSize(newWidth / 2, newHeight);
+		cameraAux.getVP()->upload();
 	}
-	else
-		viewPort.uploadSize(newWidth, newHeight);
+	else if (baldosas) {
+		camera.getVP()->uploadSize(newWidth / gridCols, newHeight / gridRows);
+		camera.getVP()->upload();
+	}
+	else {
+		camera.getVP()->uploadSize(newWidth, newHeight);
+		camera.getVP()->upload();
+	}
   
 	// Resize Scene Visible Area 
-	camera.uploadSize(viewPort.getW(), viewPort.getH());    // scale unchanged
+	camera.uploadSize(camera.getVP()->getW(), camera.getVP()->getH());    // scale unchanged
 	cameraAux.uploadSize(viewPortAux.getW(), viewPortAux.getH());
 }
 
@@ -224,6 +232,11 @@ void key(unsigned char key, int x, int y) {
 	
 	case 'k':
 		cameraAux.yaw(1);
+		break;
+
+	case 'p': 
+		camera.changeProj();
+		cameraAux.changeProj();
 		break;
 
 	/*case '2':
@@ -348,12 +361,12 @@ void mouseWheel(int n, int d, int x, int y) {
 	}
 	else if (m == GLUT_ACTIVE_CTRL) {
 		if (d == 1) {
-			camera.uploadScale(0.1);
-			cameraAux.uploadScale(0.1);
+			camera.uploadScale(0.05);
+			cameraAux.uploadScale(0.05);
 		}
 		else {
-			camera.uploadScale(-0.1);
-			cameraAux.uploadScale(-0.1);
+			camera.uploadScale(-0.05);
+			cameraAux.uploadScale(-0.05);
 		}
 	}
 	glutPostRedisplay();
@@ -362,15 +375,29 @@ void mouseWheel(int n, int d, int x, int y) {
 //-------------------------------------------------------------------------
 
 void embaldosar(int nRow, int nCol) {
-	//GLdouble SVAratio = (camera.xRight - camera.xLeft) / (camera.yTop - camera.yBot);
-	GLdouble w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
-	GLdouble h = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (GLdouble)nRow;
+	GLdouble h, w;
+	/*
+	GLdouble SVAratio = (camera.xRight - camera.xLeft) / (camera.yTop - camera.yBot);
+	if ( SVAratio * glutGet(GLUT_WINDOW_HEIGHT) < glutGet(GLUT_WINDOW_WIDTH) ) {
+		h = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (GLdouble)nRow;
+		w = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (SVAratio*(GLdouble)nCol);
+	}
+	else {
+		w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
+		h = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (SVAratio*(GLdouble)nRow);
+	}
+	*/
+
+	h = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (GLdouble)nRow;
+	w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
+
 	for (GLint c = 0; c < nCol; c++) {
 		GLdouble currentH = 0;
 		while ((currentH + h) <= glutGet(GLUT_WINDOW_HEIGHT)) {
 			Viewport* vp = new Viewport((GLint)w, (GLint)h);
 			vp->uploadPos((GLint)(c*w), (GLint)currentH);
 			vp->upload();
+			//camera.getVP()->~Viewport();
 			camera.setVP(vp);
 			scene.render(camera.getViewMat());
 			currentH += h;
@@ -386,12 +413,14 @@ void doubleScene() {
 	Viewport* vp = new Viewport((GLint) w, (GLint)glutGet(GLUT_WINDOW_HEIGHT));
 	vp->uploadPos(0, 0);
 	vp->upload();
+	//camera.getVP()->~Viewport();
 	camera.setVP(vp);
 	scene.render(camera.getViewMat());
 
 	vp = new Viewport((GLint)w, (GLint)glutGet(GLUT_WINDOW_HEIGHT));
 	vp->uploadPos(w, 0);
 	vp->upload();
+	//cameraAux.getVP()->~Viewport();
 	cameraAux.setVP(vp);
 	sceneAux.render(cameraAux.getViewMat());
 

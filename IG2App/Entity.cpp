@@ -1071,7 +1071,7 @@ EsferaDron::EsferaDron(GLdouble r, GLdouble m, GLdouble n) : Esfera(r, m, n) {
 
 	this->angMer = 45.0;
 	this->angPar = 0.0;
-
+	
 	this->dron = new Dron(5, 2, 5, 20);
 }
 
@@ -1105,22 +1105,38 @@ void EsferaDron::render(dmat4 const &modelViewMat)
 }
 
 void EsferaDron::update() { 
+	if( this->oscilacion )
+		switch ( rand() % 8 ) {
+		case 0:
+			this->angPar -= 0.1;
+			break;
+		case 1:
+			this->angMer -= 0.1;
+			break;
+		case 2:
+			this->angPar += 0.1;
+			break;
+		case 3:
+			this->angMer += 0.1;
+			break;
+		}
+
 	this->dron->update();
 }
 
 void EsferaDron::move(int key) {
 	switch (key) {
 	case GLUT_KEY_RIGHT:
-		this->angMer += 5;
+		this->angMer += 3;
 		break;
 	case GLUT_KEY_LEFT:
-		this->angMer -= 5;
+		this->angMer -= 3;
 		break;
 	case GLUT_KEY_UP:
-		this->angPar += 5;
+		this->angPar -= 3;
 		break;
 	case GLUT_KEY_DOWN:
-		this->angPar -= 5;
+		this->angPar += 3;
 		break;
 	}
 }

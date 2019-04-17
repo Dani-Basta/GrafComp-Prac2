@@ -52,6 +52,8 @@ public:
 	void orbit(GLdouble ax);
 	void orbit(GLdouble ax, GLdouble ay);
 
+	void changeProj(void);
+
 protected:
 
 	void setAxes(void);
