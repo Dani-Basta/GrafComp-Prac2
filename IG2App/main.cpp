@@ -41,7 +41,6 @@ int gridRows = 2, gridCols = 2;
 
 bool twoPorts = false;
 
-
 //----------- Callbacks ----------------------------------------------------
 
 void display(void);
