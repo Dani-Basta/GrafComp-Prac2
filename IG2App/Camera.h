@@ -53,6 +53,7 @@ public:
 	void orbit(GLdouble ax, GLdouble ay);
 
 	void changeProj(void);
+	void uploadPM(void);  // transfers projMat to the GPU
 
 protected:
 
@@ -79,7 +80,7 @@ protected:
 	glm::dmat4 projMat;     // projection matrix
 	// projection matrix
 	glm::dmat4 const& getProjMat() const { return projMat; };
-	void uploadPM(void);  // transfers projMat to the GPU
+	
 	
 	
 	GLdouble nearVal = 1, farVal = 10000;  // view volume

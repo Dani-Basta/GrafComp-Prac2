@@ -37,9 +37,11 @@ glm::dvec2 mCoord;
 int mBot = 0;
 
 bool baldosas = false;
+double ratioWH = 800 / 600;
 int gridRows = 2, gridCols = 2;
 
 bool twoPorts = false;
+
 
 //----------- Callbacks ----------------------------------------------------
 
@@ -54,6 +56,8 @@ void mouse(int button, int state, int x, int y);
 void motion(int x, int y);
 void mouseWheel(int n, int d, int x, int y);
 
+void vistaSimple(void);
+void embaldosar(int nCol);
 void embaldosar(int nCol, int nRow);
 void doubleScene(void);
 
@@ -134,42 +138,60 @@ void display() {   // double buffering
   
 	//scene.render(camera.getViewMat());   
     
-	if (twoPorts)
+	if (twoPorts) {
 		doubleScene();
-	else if (baldosas)
-		embaldosar(gridRows, gridCols);
+	}
+	else if (baldosas) {
+		gridRows = gridCols = 2;
+		//embaldosar(gridRows, gridCols);
+		embaldosar(gridCols);
+		scene.render(camera.getViewMat());
+	}
 	else {
-		embaldosar(1, 1);
-		//scene.render(camera.getViewMat());
-		//glutPostRedisplay();
+		//embaldosar(1);
+		vistaSimple();
+		scene.render(camera.getViewMat());
 	}
 
 	glutSwapBuffers();  
-
+	glutPostRedisplay();
 }
 
 //-------------------------------------------------------------------------
 
 void resize(int newWidth, int newHeight) {
 	// Resize Viewport 
+	/*
 	if (twoPorts) {
 		camera.getVP()->uploadSize(newWidth/2, newHeight);
-		camera.getVP()->upload();
 		cameraAux.getVP()->uploadSize(newWidth / 2, newHeight);
-		cameraAux.getVP()->upload();
 	}
 	else if (baldosas) {
 		camera.getVP()->uploadSize(newWidth / gridCols, newHeight / gridRows);
-		camera.getVP()->upload();
 	}
 	else {
 		camera.getVP()->uploadSize(newWidth, newHeight);
-		camera.getVP()->upload();
 	}
-  
+
 	// Resize Scene Visible Area 
 	camera.uploadSize(camera.getVP()->getW(), camera.getVP()->getH());    // scale unchanged
-	cameraAux.uploadSize(viewPortAux.getW(), viewPortAux.getH());
+	scene.render(camera.getViewMat());
+	cameraAux.uploadSize(cameraAux.getVP()->getW(), cameraAux.getVP()->getH());
+	sceneAux.render(cameraAux.getViewMat());
+	//*/
+
+	if (twoPorts) {
+		//cameraAux.getVP()->uploadSize(newWidth, newHeight);
+		viewPortAux.uploadSize(newWidth, newHeight);
+		viewPort.uploadSize(newWidth, newHeight);
+
+		camera.uploadSize(viewPort.getW(), viewPort.getH());
+		cameraAux.uploadSize(viewPortAux.getW(), viewPortAux.getH());
+	}
+	else {
+		viewPort.uploadSize(newWidth, newHeight);
+		camera.uploadSize(viewPort.getW(), viewPort.getH());
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -345,30 +367,67 @@ void mouseWheel(int n, int d, int x, int y) {
 	// Se identifica cuántas teclas de las siguientes están pulsadas
 	// GLUT_ACTIVE_CTRL/_ALT/_SHIFT
 	int m = glutGetModifiers();
-	if (m == 0) { 
+	if (m == 0) {
 		// Es decir, si ninguna tecla está pulsada,
 		// se desplaza la cámara en la dirección de vista
 		// d=+1/-1, rueda hacia delante/hacia atrás
 		if (d == 1) {
-			camera.moveFB(50);
-			cameraAux.moveFB(50);
+			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+				cameraAux.moveFB(50);
+			else
+				camera.moveFB(50);
 		}
 		else {
-			camera.moveFB(-50);
-			cameraAux.moveFB(-50);
+			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+				cameraAux.moveFB(-50);
+			else
+				camera.moveFB(-50);
 		}
 	}
 	else if (m == GLUT_ACTIVE_CTRL) {
 		if (d == 1) {
-			camera.uploadScale(0.05);
-			cameraAux.uploadScale(0.05);
+			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+				cameraAux.uploadScale(0.02);
+			else
+				camera.uploadScale(0.02);
 		}
 		else {
-			camera.uploadScale(-0.05);
-			cameraAux.uploadScale(-0.05);
+			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+				cameraAux.uploadScale(-0.02);
+			else
+				camera.uploadScale(-0.02);
 		}
 	}
 	glutPostRedisplay();
+}
+
+//-------------------------------------------------------------------------
+
+void vistaSimple(void) {
+	Viewport* vp = new Viewport(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	vp->uploadPos(0, 0);
+	vp->upload();
+	camera.setVP(vp);
+	scene.render(camera.getViewMat());
+}
+
+//-------------------------------------------------------------------------
+
+void embaldosar(int nCol) {
+	GLdouble SVAratio = (camera.xRight - camera.xLeft) / (camera.yTop - camera.yBot);
+	GLdouble w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
+	GLdouble h = w / SVAratio;
+	for (GLint c = 0; c < nCol; c++) {
+		GLdouble currentH = 0;
+		while ((currentH + h) <= glutGet(GLUT_WINDOW_HEIGHT)) {
+			Viewport* vp = new Viewport((GLint)w, (GLint)h);
+			vp->uploadPos((GLint)(c * w), (GLint)currentH);
+			vp->upload();
+			camera.setVP(vp);
+			scene.render(camera.getViewMat());
+			currentH += h;
+		}
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -385,10 +444,14 @@ void embaldosar(int nRow, int nCol) {
 		w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
 		h = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (SVAratio*(GLdouble)nRow);
 	}
-	*/
+	//*/
 
-	h = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (GLdouble)nRow;
+	//h = (GLdouble)glutGet(GLUT_WINDOW_HEIGHT) / (GLdouble)nRow;
+	//w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
+
+	GLdouble SVAratio = (camera.xRight - camera.xLeft) / (camera.yTop - camera.yBot);
 	w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / (GLdouble)nCol;
+	h = w / (SVAratio * (GLdouble)nRow);
 
 	for (GLint c = 0; c < nCol; c++) {
 		GLdouble currentH = 0;
@@ -407,20 +470,24 @@ void embaldosar(int nRow, int nCol) {
 //-------------------------------------------------------------------------
 
 void doubleScene() {
+	GLdouble SVAratio = (camera.xRight - camera.xLeft) / (camera.yTop - camera.yBot);
 	GLdouble w = (GLdouble)glutGet(GLUT_WINDOW_WIDTH) / 2.0;
+	GLdouble h = w / SVAratio;
 
-	Viewport* vp = new Viewport((GLint) w, (GLint)glutGet(GLUT_WINDOW_HEIGHT));
-	vp->uploadPos(0, 0);
+	Viewport* vp = new Viewport((GLint) w, h);
+	vp->uploadPos(0, ((GLdouble)glutGet(GLUT_WINDOW_HEIGHT) - h ) /2.0);
 	vp->upload();
 	//camera.getVP()->~Viewport();
 	camera.setVP(vp);
+	camera.uploadPM();
 	scene.render(camera.getViewMat());
 
-	vp = new Viewport((GLint)w, (GLint)glutGet(GLUT_WINDOW_HEIGHT));
-	vp->uploadPos(w, 0);
+	vp = new Viewport((GLint)w, h);
+	vp->uploadPos(w, ((GLdouble)glutGet(GLUT_WINDOW_HEIGHT) - h) / 2.0);
 	vp->upload();
 	//cameraAux.getVP()->~Viewport();
 	cameraAux.setVP(vp);
+	cameraAux.uploadPM();
 	sceneAux.render(cameraAux.getViewMat());
 
 }
