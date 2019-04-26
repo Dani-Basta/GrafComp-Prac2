@@ -408,6 +408,7 @@ void vistaSimple(void) {
 	vp->uploadPos(0, 0);
 	vp->upload();
 	camera.setVP(vp);
+	camera.uploadPM();
 	scene.render(camera.getViewMat());
 }
 
@@ -424,6 +425,7 @@ void embaldosar(int nCol) {
 			vp->uploadPos((GLint)(c * w), (GLint)currentH);
 			vp->upload();
 			camera.setVP(vp);
+			camera.uploadPM();
 			scene.render(camera.getViewMat());
 			currentH += h;
 		}
@@ -461,6 +463,7 @@ void embaldosar(int nRow, int nCol) {
 			vp->upload();
 			//camera.getVP()->~Viewport();
 			camera.setVP(vp);
+			camera.uploadPM();
 			scene.render(camera.getViewMat());
 			currentH += h;
 		}

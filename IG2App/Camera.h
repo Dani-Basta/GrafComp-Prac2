@@ -12,7 +12,7 @@ class Camera {
 public:
 	Camera(Viewport* avp) : vp(avp), viewMat(1.0), projMat(1.0),
 							xRight(avp->getW() / 2.0), xLeft(-xRight), 
-							yTop(avp->getH() / 2.0), yBot(-yTop) { };
+							yTop(avp->getH() / 2.0), yBot(-yTop), orto(true) { };
 	~Camera() {};
 	Viewport* getVP() { return vp; }
 	void setVP(Viewport* avp) { this->vp = avp; }
@@ -72,7 +72,7 @@ protected:
 	GLdouble ang = 0.0;
 	GLdouble radio = 1000.0;
 
-	bool orto = true;
+	bool orto;
 
 
 	glm::dmat4 viewMat;    // view matrix = inverse of modeling matrix
