@@ -150,6 +150,19 @@ void PartialDisk::update() {}
 	Todos estos métodos se utilizan dentro de la implementación correspondiente de render.
 */
 
+void CompoundEntity::render(dmat4 const& modelViewMat) {
+	glMatrixMode(GL_MODELVIEW);
+	dmat4 aMat = modelViewMat * modelMat;
+	glLoadMatrixd(value_ptr(aMat));
+	for (Entity* it : grObjects) 
+		it->render(aMat);
+}
+
+void CompoundEntity::update() {
+	for (Entity* it : grObjects) 
+		it->update();
+}
+
 //-------------------------------------------------------------------------
 EjesRGB::EjesRGB(GLdouble l): Entity() 
 {
@@ -164,7 +177,8 @@ EjesRGB::~EjesRGB()
 void EjesRGB::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
-		uploadMvM(modelViewMat); 
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
+		uploadMvM(modelMatAux);
 		glLineWidth(2); 
 		mesh->render();
 		glLineWidth(1);
@@ -197,7 +211,7 @@ void Poliespiral::render(dmat4 const &modelViewMat)
 		
 
 		//El traslado necesario para realizar la escena. Comentar si se desea que esté en (0,0).
-		dmat4 modelMatAux = modelViewMat;
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 		modelMatAux = translate(modelMatAux, dvec3(-100, 100, 0.0));
 
 		uploadMvM(modelMatAux);
@@ -236,7 +250,7 @@ void Dragon::render(dmat4 const &modelViewMat)
 
 		
 		//dmat4 modelMatAux = modelMat; //De esta otra forma no funciona.
-		dmat4 modelMatAux= modelViewMat;
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
 		//Traslación inicial para la escena 2D.
 		modelMatAux = translate(modelMatAux, dvec3(100,100,0));
@@ -281,7 +295,7 @@ void TrianguloRGB::render(dmat4 const &modelViewMat)
 	if (mesh != nullptr) {
 
 
-		dmat4 modelMatAux = modelViewMat;
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
 		//Traslación inicial para la escena 2D.
 		modelMatAux = translate(modelMatAux, dvec3(-100,-100,0));
@@ -319,7 +333,7 @@ void RectanguloRGB::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 modelMatAux = modelViewMat;
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
 
 		//Rotación necesaria para la escena 3D.
@@ -359,7 +373,7 @@ void TrianguloAnimado::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 
 		//Traslación inicial para la escena 2D.
 		//No la realizamos, lo ubicamos en el centro (0,0,0).
@@ -402,7 +416,7 @@ void Estrella3D::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glColor3d(1.0, 0.0, 0.0); //Establecemos los colores.
@@ -458,8 +472,9 @@ void Cubo3D::render(dmat4 const &modelViewMat)
 		glColor3d(0.0, 0.0, 1.0); //Establecemos los colores.
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
-		uploadMvM(modelViewMat);
+		uploadMvM(modelMatAux);
 
 
 		mesh->render();  //Dibujamos el cubo.
@@ -499,8 +514,9 @@ void CuboTapado::render(dmat4 const &modelViewMat)
 		glColor3d(0.0, 0.0, 1.0); //Establecemos los colores.
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
-		uploadMvM(modelViewMat);
+		uploadMvM(modelMatAux);
 
 
 		mesh->render();  //Dibujamos el cubo.
@@ -538,7 +554,7 @@ void RectanguloTexCor::render(dmat4 const &modelViewMat)
 		texture.bind( GL_REPLACE );				//Importante para añadir la textura.
 
 
-		dmat4 modelMatAux = modelViewMat;
+		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
 		//Rotación necesaria para la escena 3D.
 		modelMatAux = rotate(modelMatAux, radians(90.0), dvec3(1, 0, 0));
@@ -579,7 +595,7 @@ void EstrellaTexCor::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 		
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 
 		//Traslación para la animación 3D
 		auxModelMat = translate(auxModelMat, dvec3(100, 100, 100));
@@ -629,12 +645,12 @@ CajaTexCor::~CajaTexCor()
 void CajaTexCor::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
-
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 		//Renderizamos solo el exterior.
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_FRONT);
 		texture.bind(GL_REPLACE);				//Importante para añadir la textura.
-		uploadMvM(modelViewMat);
+		uploadMvM(auxModelMat);
 		mesh->render();  //Dibujamos el cubo.
 		auxiliarMesh->render();
 		texture.unbind();
@@ -642,7 +658,7 @@ void CajaTexCor::render(dmat4 const &modelViewMat)
 		//Renderizamos el interior.
 		glCullFace(GL_BACK);
 		textureAux.bind(GL_REPLACE);				//Importante para añadir la textura.
-		uploadMvM(modelViewMat);
+		uploadMvM(auxModelMat);
 		mesh->render();  //Dibujamos el cubo.
 		auxiliarMesh->render();
 		textureAux.unbind();
@@ -673,7 +689,7 @@ void Foto::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 
 		//Traslación para la animación 3D
 		auxModelMat = translate(auxModelMat, dvec3(150, 150, 0));
@@ -726,7 +742,7 @@ void Cangilon::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 
 		//Traslación para centrar el cangilon.
 		auxModelMat = translate(auxModelMat, dvec3(-w / 2, -h / 2, -w / 2));
@@ -788,7 +804,7 @@ void AspaNoria::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 		glColor3d(0, 0, 0);
 
 		//Realizamos la rotación para que en lugar de estar alineado con el eje z, lo esté con el eje x.
@@ -825,25 +841,45 @@ void AspaNoria::update() {
 
 //ROTOR
 
-Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise, bool forceColor)
-{	
+Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise) {	
+	this->rect = new RectanguloRGB(2 * r, w);
+	this->cil = new Cylinder(r, r, w);
+	
+	dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
+
+	dmat4 rectMM = translate(cylMM, dvec3(0, 0, this->w / 2));
+	rectMM = rotate(rectMM, radians(90.0), dvec3(1, 0, 0));
+
+	rect->setModelMat(rectMM);
+	this->cil->setModelMat(cylMM);
+	
+	this->grObjects.push_back(rect);
+	this->grObjects.push_back(this->cil);
+
+	this->incrAngle = clockwise ? -37 : 37;
+	
 	this->r = r;
 	this->w = w;
 	this->angle = 0;
-	this->incrAngle = clockwise ? -37 : 37;
+	
 	this->mesh = Mesh::generaRectangulo(2 * r, w);
-	this->forceColor = forceColor;
-	this->cil = new Cylinder(r, r, w);
+	
+	
 }
 
-Rotor::~Rotor()
-{
+Rotor::~Rotor() {
+	CompoundEntity::~CompoundEntity();
+	
+	return;
+
 	delete mesh; mesh = nullptr;
 	delete cil; cil = nullptr;
 }
 
-void Rotor::render(dmat4 const &modelViewMat)
-{
+void Rotor::render(dmat4 const &modelViewMat) {
+	CompoundEntity::render(modelViewMat*this->modelMat);
+	return ;
+	/*
 	if (mesh != nullptr) {
 
 		dmat4 auxModelMat = modelViewMat;
@@ -851,15 +887,13 @@ void Rotor::render(dmat4 const &modelViewMat)
 		auxModelMat = rotate(auxModelMat, radians(-90.0), dvec3(1, 0, 0));
 
 		// Pintamos el cilindro que hace de contorno del aspa
-		if(forceColor)
-			glColor3f(1.0, 0.0, 0.0);
-		gluQuadricDrawStyle(q, GLU_LINE);
+		glColor3f(1.0, 0.0, 0.0);
+		//gluQuadricDrawStyle(q, GLU_LINE);
 		//gluCylinder(this->q, this->r, this->r, this->w, 50, 50);
 		this->cil->render(auxModelMat);
-		gluQuadricDrawStyle(q, GLU_FILL);
+		//gluQuadricDrawStyle(q, GLU_FILL);
 		// Devolvemos el color al por defecto 
-		if (forceColor)
-			glColor3f(1.0, 1.0, 1.0);
+		glColor3f(1.0, 1.0, 1.0);
 
 		uploadMvM(auxModelMat);
 		
@@ -877,13 +911,13 @@ void Rotor::render(dmat4 const &modelViewMat)
 		mesh->render();
 		glColor3d(1.0, 1.0, 1.0);
 
-
-
 	}
+	*/
 }
 
 void Rotor::update() {
-	this->angle += this->incrAngle;
+	this->rect->setModelMat(rotate( this->rect->getModelMat(), radians(this->incrAngle), dvec3(0, 1, 0)));
+	//this->angle += this->incrAngle;
 }
 
 //------------------------------------------------------------------------
@@ -911,7 +945,7 @@ void Chasis::render(dmat4 const &modelViewMat)
 {
 	if (mesh != nullptr) {
 
-		dmat4 auxModelMat = modelViewMat;
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
 		glColor3d(0, 0, 1);
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Reestablecemos la opción por defecto.
 
@@ -942,11 +976,28 @@ Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW)
 	this->w = w;
 	this->escH = escH;
 	this->escW = escW;
+
 	this->chasis = new Chasis(escH, escW);
-	this->rot1 = new Rotor(r, w, true, false);
-	this->rot2 = new Rotor(r, w, false, false);
-	this->rot3 = new Rotor(r, w, false, false);
-	this->rot4 = new Rotor(r, w, true, false);
+
+	this->rot1 = new Rotor(r, w, true);
+	this->rot2 = new Rotor(r, w, false);
+	this->rot3 = new Rotor(r, w, false);
+	this->rot4 = new Rotor(r, w, true);
+
+	this->chasis->setModelMat( this->modelMat );
+
+	/*
+	this->rot1->setModelMat(translate(this->modelMat, dvec3(-this->escW / 2, this->escH / 2, -this->escW / 2)));
+	this->rot2->setModelMat(translate(this->modelMat, dvec3(this->escW / 2, this->escH / 2, -this->escW / 2)));
+	this->rot3 = new Rotor(r, w, false);
+	this->rot4 = new Rotor(r, w, true);
+	*/
+
+	this->grObjects.push_back(chasis);
+	this->grObjects.push_back(rot1);
+	this->grObjects.push_back(rot2);
+	this->grObjects.push_back(rot3);
+	this->grObjects.push_back(rot4);
 }
 
 Dron::~Dron()
@@ -958,8 +1009,10 @@ Dron::~Dron()
 	delete rot4; rot4 = nullptr;
 }
 
-void Dron::render(dmat4 const &modelViewMat)
-{
+void Dron::render(dmat4 const &modelViewMat) {
+	CompoundEntity::render(modelViewMat);
+	return ;
+
 	this->chasis->render(modelViewMat);
 
 	glColor3f(1.0, 0.0, 0.0);
@@ -1010,7 +1063,8 @@ Cone::~Cone(){
 void Cone::render(dmat4 const &modelViewMat)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	uploadMvM(modelViewMat);
+	dmat4 auxModelMat = modelViewMat * this->modelMat;
+	uploadMvM(auxModelMat);
 	// mesh->render(); // No funciona el polimorfismo Mesh-MBR
 	mbr->render();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -1055,7 +1109,8 @@ Esfera::~Esfera(){
 void Esfera::render(dmat4 const &modelViewMat)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	uploadMvM(modelViewMat);
+	dmat4 auxModelMat = modelViewMat * this->modelMat;
+	uploadMvM(auxModelMat);
 	// mesh->render(); // No funciona el polimorfismo Mesh-MBR
 	mbr->render();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -1186,3 +1241,5 @@ void DronDrones::update() {
 	__super::update();
 	//this->dron->update();
 }
+
+

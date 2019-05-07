@@ -18,6 +18,7 @@ void Scene::init2D() {
 	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
 	glEnable(GL_DEPTH_TEST);  // enable Depth test 
 	//glEnable(GL_TEXTURE_2D);
+	glDisable(GL_COLOR_MATERIAL);
 
 	// lights
 	// textures  

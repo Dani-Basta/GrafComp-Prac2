@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Pixmap32RGBA.h"
+#include <vector>
 
 //-------------------------------------------------------------------------
 
@@ -46,6 +47,21 @@ protected:
 //------------------------ENTIDADES CUÁDRICAS------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
+
+class CompoundEntity : public Entity {
+public:
+	~CompoundEntity() {
+		for (Entity* it : grObjects) 
+			delete it;
+	}
+	void render(glm::dmat4 const &modelViewMat);
+	void update();
+protected:
+	std::vector<Entity*> grObjects;
+	Entity* getEntity(int i) {
+		return grObjects.at(i);
+	}
+};
 
 
 class QuadricEntity : public Entity {
@@ -339,15 +355,15 @@ public:
 
 //ROTOR
 
-class Rotor : public QuadricEntity {
+class Rotor : public CompoundEntity {
 protected:
 	GLdouble r, w;
 	GLdouble angle;
 	GLdouble incrAngle;
-	bool forceColor;
+	RectanguloRGB *rect;
 	Cylinder *cil;
 public:
-	Rotor(GLdouble r, GLdouble w, bool clockwise, bool forceColor); // r is the radius of the sphere
+	Rotor(GLdouble r, GLdouble w, bool clockwise); // r is the radius of the sphere
 	~Rotor();
 	void render(glm::dmat4 const& modelViewMat);
 	virtual void update();
@@ -377,7 +393,7 @@ public:
 
 //DRON
 
-class Dron : public Entity {
+class Dron : public CompoundEntity {
 protected:
 	GLdouble escH;		//Factor de escalado en altura.
 	GLdouble escW;		//Factor de escalado en anchura.
