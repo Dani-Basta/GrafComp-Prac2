@@ -152,12 +152,17 @@ void Scene::noria(int n) {
 
 //-------------------------------------------------------------------------
 
+void Scene::apagarLuces() {
+	for (Light * li : lights)
+		li->disable();
+}
+
 void Scene::esferaRev() {
 	glDisable(GL_LIGHTING);
 	glEnable(GL_LIGHTING);
+	apagarLuces();
 	lights.clear();
 	grObjects.clear();
-
 	//glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
 	
 	glEnable(GL_DEPTH_TEST);  // enable Depth test 
@@ -175,7 +180,7 @@ void Scene::esferaRev() {
 
 	light->setPosDir(fvec3(-1, -1, 0));
 
-	lights.push_back(light);
+	this->lights.push_back(light);
 
 	grObjects.push_back(new EjesRGB(300.0));
 
@@ -191,18 +196,25 @@ void Scene::esferaRev() {
 //-------------------------------------------------------------------------
 
 void Scene::esferaMateriales(int color) {
-
-	lights.clear();
+	apagarLuces();
+	//lights.clear();
 	grObjects.clear();
 
+	glDisable(GL_COLOR_MATERIAL);
+	
+	Material mat = Material();
 	switch (color) {
 	case 1:
-	case 2:
-	case 3:
-		_H_Entities_H_::_material = color;
+		mat.setCopper();
+		mat.upload();
 		break;
-	default:
-		_H_Entities_H_::_material = 0;
+	case 2:
+		mat.setGold();
+		mat.upload();
+		break;
+	case 3:
+		mat.setSilver();
+		mat.upload();
 		break;
 	}
 
@@ -220,8 +232,9 @@ void Scene::esferaMateriales(int color) {
 	light->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
 
 	light->setPosDir(fvec3(-1, -1, 0));
-
-	lights.push_back(light);
+	//lights.~vector();
+	this->lights = std::vector<Light*>();
+	this->lights.push_back(light);
 
 
 	grObjects.push_back(new EjesRGB(300.0));

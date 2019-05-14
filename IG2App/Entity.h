@@ -13,8 +13,6 @@
 
 //-------------------------------------------------------------------------
 
-static int _material = 1;
-
 class Entity {
 public:
 	Entity() : modelMat(1.0) { }; 

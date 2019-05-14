@@ -1110,7 +1110,7 @@ Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 	// this->mesh = new MBR(m, n, perfil); // No funciona el polimorfismo Mesh-MBR
 	this->mbr = new MBR(m, n, perfil);
 
-	// this->color = fvec3(0.8, 0.4, 0.2);
+	this->color = fvec3(0.8, 0.4, 0.2);
 }
 
 Esfera::~Esfera(){
@@ -1133,34 +1133,14 @@ void Esfera::render(dmat4 const &modelViewMat) {
 
 		dmat4 auxModelMat = modelViewMat * this->modelMat;
 		uploadMvM(auxModelMat);
-		
-		if ( color != fvec3(-1.0, -1.0, -1.0) )  // color.r != -1.0 || color.g != -1.0 || color.b != -1.0 ) 
- 			glColor3fv( value_ptr(color)  );
-		else 
-			glColor3f(0.8, 0.4, 0.2);
 
-		switch (_material) {
-		case 0:
-			this->mat = nullptr;
-			break;
-		case 1:
-			this->mat = new Material();
-			this->mat->setCopper();
-			break;
-		case 2:
-			this->mat = new Material();
-			this->mat->setGold();
-			break;
-		case 3:
-			this->mat = new Material();
-			this->mat->setSilver();
-			break;
-		}
-
-		if (this->mat != nullptr) {
-			mat->upload();
-		}
+		/*
+		this->mat = new Material();
+		this->mat->setGold();
+		mat->upload();
+		//*/
 		mbr->render();
+
 		glEnd();
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}

@@ -38,6 +38,7 @@ public:
 	void init2D(void);
 	void init3D(void);
 	void noria(int n);
+	void apagarLuces();
 	void esferaRev(void);
 	void esferaMateriales(int color);
 	void init(void);

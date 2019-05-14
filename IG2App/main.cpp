@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 	// scene.init3D();
 	sceneAux.dronDrones();
 	//scene.esferaRev();
-	scene.esferaMateriales(2);
+	scene.esferaMateriales(3);
 
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
@@ -142,7 +142,7 @@ void Update() {
 void display() {   // double buffering
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
-  
+	
 	//scene.render(camera.getViewMat());   
     
 	if (twoPorts) {
@@ -270,11 +270,12 @@ void key(unsigned char key, int x, int y) {
 	case 'n':
 		//glDisable(GL_LIGHTING);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambBlack);
+		scene.render(camera.getViewMat());
 		break;
 	case 'm':
 		//glEnable(GL_LIGHTING);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
-		
+		scene.render(camera.getViewMat());
 		break;
 
 	/*case '2':
