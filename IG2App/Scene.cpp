@@ -7,13 +7,73 @@ using namespace glm;
 
 //-------------------------------------------------------------------------
 
+Scene::~Scene()
+{ // free memory and resources   
+	for (Light* li : lights) {
+		delete li;  li = nullptr;
+	}
+	for (Entity* el : grObjects) {
+		delete el;  el = nullptr;
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void Scene::render(dmat4 const& modelViewMat) {
+	for (Light* li : lights)
+		li->upload(modelViewMat);
+
+	CompoundEntity::render(modelViewMat);
+	/*
+	for (Entity* el: grObjects)
+	{
+		el->render(modelViewMat);
+	}*/
+}
+
+//-------------------------------------------------------------------------
+
+void Scene::update() {
+	CompoundEntity::update();
+	/*
+	for (Entity* el : grObjects)
+	{
+		el->update();
+	}
+	*/
+}
+
+//-------------------------------------------------------------------------
+
+void Scene::update(GLuint timeElapsed) {
+	if (timeElapsed - time > umbral) {
+		CompoundEntity::update();
+		time = timeElapsed;
+	}
+
+}
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+void Scene::move(int key) {
+	if (esfera != nullptr)
+		this->esfera->move(key);
+}
+
+//-------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
 //Escena 2D.
 void Scene::init2D() {
 	// OpenGL basic setting
-
+	lights.clear();
 	//Eliminamos los objetos que habia antes.
 	grObjects.clear();
-
 
 	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
 	glEnable(GL_DEPTH_TEST);  // enable Depth test 
@@ -40,7 +100,7 @@ void Scene::init2D() {
 //Escena 3D
 void Scene::init3D() {
 	// OpenGL basic setting
-
+	lights.clear();
 	grObjects.clear();
 
 
@@ -69,7 +129,7 @@ void Scene::init3D() {
 //-------------------------------------------------------------------------
 
 void Scene::noria(int n) {
-
+	lights.clear();
 	grObjects.clear();
 
 
@@ -93,33 +153,96 @@ void Scene::noria(int n) {
 //-------------------------------------------------------------------------
 
 void Scene::esferaRev() {
-
+	glDisable(GL_LIGHTING);
+	glEnable(GL_LIGHTING);
+	lights.clear();
 	grObjects.clear();
 
-
-	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	//glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	
 	glEnable(GL_DEPTH_TEST);  // enable Depth test 
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_NORMALIZE);
+
+	//lights.push_back( ambGlo );
+	DirLight* light = new DirLight();
+	light->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
+	light->setAmbient(fvec4(0.2, 0.2, 0.2, 1.0));
+	light->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
+
+	light->setPosDir(fvec3(-1, -1, 0));
+
+	lights.push_back(light);
 
 	grObjects.push_back(new EjesRGB(300.0));
 
 	//grObjects.push_back(new CuboTapado(10, 100));
-
 	//grObjects.push_back(new Rotor(100, 50, true));
 	//grObjects.push_back(new Chasis(10,100));
-
 	//grObjects.push_back(new Dron(40, 15, 30, 250));
-
 	//grObjects.push_back( new Cone(250, 150) );
 
 	grObjects.push_back(new Esfera(100, 50, 50) );
-
 }
 
 //-------------------------------------------------------------------------
 
-void Scene::init() {
+void Scene::esferaMateriales(int color) {
 
+	lights.clear();
+	grObjects.clear();
+
+	switch (color) {
+	case 1:
+	case 2:
+	case 3:
+		_H_Entities_H_::_material = color;
+		break;
+	default:
+		_H_Entities_H_::_material = 0;
+		break;
+	}
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	//glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_NORMALIZE);
+
+	//lights.push_back( ambGlo );
+	DirLight* light = new DirLight();
+	light->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
+	light->setAmbient(fvec4(0.2, 0.2, 0.2, 1.0));
+	light->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
+
+	light->setPosDir(fvec3(-1, -1, 0));
+
+	lights.push_back(light);
+
+
+	grObjects.push_back(new EjesRGB(300.0));
+
+
+	//grObjects.push_back(new CuboTapado(10, 100));
+	//grObjects.push_back(new Rotor(100, 50, true));
+	//grObjects.push_back(new Chasis(10,100));
+	//grObjects.push_back(new Dron(40, 15, 30, 250));
+	//grObjects.push_back( new Cone(250, 150) );
+
+	Esfera* esf = new Esfera(100, 50, 50);
+
+	grObjects.push_back(esf);
+}
+
+
+//-------------------------------------------------------------------------
+
+void Scene::init() {
+	lights.clear();
 	grObjects.clear();
 
 
@@ -137,7 +260,7 @@ void Scene::init() {
 //-------------------------------------------------------------------------
 
 void Scene::dronDrones() {
-
+	lights.clear();
 	grObjects.clear();
 
 
@@ -147,59 +270,11 @@ void Scene::dronDrones() {
 
 	grObjects.push_back(new EjesRGB(300.0));
 
+	//grObjects.push_back(new Rotor(100, 50, true));
+	//grObjects.push_back(new Dron(40, 15, 30, 250));
 	grObjects.push_back(new DronDrones(35, 15, 30, 200));
 
 
 }
 
 //-------------------------------------------------------------------------
-
-Scene::~Scene()
-{ // free memory and resources   
-  
-  for (Entity* el: grObjects)
-  {
-	  delete el;  el = nullptr;
-  }
-}
-
-//-------------------------------------------------------------------------
-
-void Scene::render(dmat4 const &modelViewMat)
-{
-	for (Entity* el: grObjects)
-	{
-		el->render(modelViewMat);
-	}
-}
-
-//-------------------------------------------------------------------------
-
-void Scene::update()
-{
-	for (Entity* el : grObjects)
-	{
-		el->update();
-	}
-}
-
-//-------------------------------------------------------------------------
-
-void Scene::update(GLuint timeElapsed)
-{
-	if (timeElapsed - time > umbral) {
-		for (Entity* el : grObjects)
-		{
-			el->update();
-		}
-		time = timeElapsed;
-	}
-
-}
-
-//-------------------------------------------------------------------------
-
-
-void Scene::move(int key) {
-	this->esfera->move(key);
-}

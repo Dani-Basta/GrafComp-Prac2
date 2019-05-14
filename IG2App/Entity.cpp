@@ -104,16 +104,14 @@ void Disk::render(glm::dmat4 const& modelViewMat) {
 
 void Disk::update() {}
 
-PartialDisk::PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin)
-{
+PartialDisk::PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin) {
 	this->r1 = r1;
 	this->r2 = r2;
 	this->ini = ini;
 	this->fin = fin;
 }
 
-void PartialDisk::render(glm::dmat4 const & modelViewMat)
-{
+void PartialDisk::render(glm::dmat4 const & modelViewMat) {
 	uploadMvM(modelViewMat);
 
 	// Fijar el color con glColor3f(...);
@@ -130,6 +128,7 @@ void PartialDisk::render(glm::dmat4 const & modelViewMat)
 
 void PartialDisk::update() {}
 
+//-------------------------------------------------------------------------
 
 /*
 	Debemos implementar estos tres métodos para cada clase que queramos mostrar.
@@ -150,6 +149,10 @@ void PartialDisk::update() {}
 	Todos estos métodos se utilizan dentro de la implementación correspondiente de render.
 */
 
+//-------------------------------------------------------------------------
+
+// COMPOUND ENTITY
+
 void CompoundEntity::render(dmat4 const& modelViewMat) {
 	glMatrixMode(GL_MODELVIEW);
 	dmat4 aMat = modelViewMat * modelMat;
@@ -164,6 +167,7 @@ void CompoundEntity::update() {
 }
 
 //-------------------------------------------------------------------------
+
 EjesRGB::EjesRGB(GLdouble l): Entity() 
 {
   mesh = Mesh::createRGBAxes(l);
@@ -319,28 +323,34 @@ void TrianguloRGB::update() {
 
 //Rectangulo RGB
 
-RectanguloRGB::RectanguloRGB(GLdouble w, GLdouble h) : Entity()
-{
-	mesh = Mesh::generaRectanguloRGB(w,h);
+RectanguloRGB::RectanguloRGB(GLdouble w, GLdouble h) : Entity() {
+	this->modelMat = dmat4(1.0);
+	mesh = Mesh::generaRectanguloRGB(w, h);
+	this->color = fvec3(1.0);
 }
 
-RectanguloRGB::~RectanguloRGB()
-{
+RectanguloRGB::RectanguloRGB(GLdouble w, GLdouble h, fvec3 color) : Entity() {
+	this->modelMat = dmat4(1.0);
+	mesh = Mesh::generaRectanguloRGB(w, h);
+	this->color = color;
+}
+
+RectanguloRGB::~RectanguloRGB() {
 	delete mesh; mesh = nullptr;
 };
 
-void RectanguloRGB::render(dmat4 const &modelViewMat)
-{
+void RectanguloRGB::render(dmat4 const &modelViewMat) {
 	if (mesh != nullptr) {
 
 		dmat4 modelMatAux = modelViewMat * this->modelMat;
 
+		glColor3f(color.r, color.g, color.b);
 
 		//Rotación necesaria para la escena 3D.
 
-		modelMatAux = rotate(modelMatAux, radians(90.0),dvec3(1,0,0));
+		//modelMatAux = rotate(modelMatAux, radians(90.0),dvec3(1,0,0));
 
-		modelMatAux = rotate(modelMatAux, radians(25.0), dvec3(0.0,0.0,1.0));
+		//modelMatAux = rotate(modelMatAux, radians(25.0), dvec3(0.0,0.0,1.0));
 
 		uploadMvM(modelMatAux);
 		mesh->render();  //Se dibuja en este momento.
@@ -841,30 +851,29 @@ void AspaNoria::update() {
 
 //ROTOR
 
-Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise) {	
-	this->rect = new RectanguloRGB(2 * r, w);
+Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise, dvec3 color) {	
+	this->modelMat = dmat4(1.0);
+	this->rect = new RectanguloRGB(2 * r, w, color);
 	this->cil = new Cylinder(r, r, w);
-	
-	dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
 
-	dmat4 rectMM = translate(cylMM, dvec3(0, 0, this->w / 2));
-	rectMM = rotate(rectMM, radians(90.0), dvec3(1, 0, 0));
-
-	rect->setModelMat(rectMM);
-	this->cil->setModelMat(cylMM);
-	
-	this->grObjects.push_back(rect);
-	this->grObjects.push_back(this->cil);
-
-	this->incrAngle = clockwise ? -37 : 37;
-	
 	this->r = r;
 	this->w = w;
 	this->angle = 0;
+
+	this->incrAngle = clockwise ? -37 : 37;
+
+	
+	dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
+
+	dmat4 rectMM = translate(modelMat, dvec3(0, this->w / 4, 0 ));
+
+	this->rect->setModelMat(rectMM);
+	this->cil->setModelMat(cylMM);
+	
+	this->grObjects.push_back(this->rect);
+	this->grObjects.push_back(this->cil);	
 	
 	this->mesh = Mesh::generaRectangulo(2 * r, w);
-	
-	
 }
 
 Rotor::~Rotor() {
@@ -876,15 +885,16 @@ Rotor::~Rotor() {
 	delete cil; cil = nullptr;
 }
 
+/*
 void Rotor::render(dmat4 const &modelViewMat) {
 	CompoundEntity::render(modelViewMat*this->modelMat);
-	return ;
+	//return ;
 	/*
 	if (mesh != nullptr) {
 
 		dmat4 auxModelMat = modelViewMat;
 
-		auxModelMat = rotate(auxModelMat, radians(-90.0), dvec3(1, 0, 0));
+		//auxModelMat = rotate(auxModelMat, radians(-90.0), dvec3(1, 0, 0));
 
 		// Pintamos el cilindro que hace de contorno del aspa
 		glColor3f(1.0, 0.0, 0.0);
@@ -897,6 +907,7 @@ void Rotor::render(dmat4 const &modelViewMat) {
 
 		uploadMvM(auxModelMat);
 		
+		auxModelMat = rotate(auxModelMat, radians(-90.0), dvec3(1, 0, 0));
 
 		auxModelMat = translate(auxModelMat, dvec3(0, 0, this->w / 2));
 
@@ -912,12 +923,19 @@ void Rotor::render(dmat4 const &modelViewMat) {
 		glColor3d(1.0, 1.0, 1.0);
 
 	}
-	*/
+	///
 }
+//*/
 
 void Rotor::update() {
-	this->rect->setModelMat(rotate( this->rect->getModelMat(), radians(this->incrAngle), dvec3(0, 1, 0)));
-	//this->angle += this->incrAngle;
+	this->rect->setModelMat( rotate(rect->getModelMat(), radians(this->incrAngle), dvec3(0, 1, 0)));
+	/*
+	dmat4 rectMM = rotate(dmat4(1.0), radians(-90.0), dvec3(1, 0, 0));
+	rectMM = translate(rectMM, dvec3(0, 0, this->w / 2));
+	rectMM = rotate(rectMM, radians(90.0), dvec3(1, 0, 0));
+	rectMM = rotate(rectMM, radians(this->angle), dvec3(0, 1, 0));
+	this->rect->setModelMat(rectMM);
+	//*/
 }
 
 //------------------------------------------------------------------------
@@ -970,28 +988,22 @@ void Chasis::update() { }
 
 //Dron
 
-Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW)
-{
-	this->r = r;
-	this->w = w;
-	this->escH = escH;
-	this->escW = escW;
+Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW) {
+	Chasis* chasis = new Chasis(escH, escW);
 
-	this->chasis = new Chasis(escH, escW);
+	this->rot1 = new Rotor(r, w, true, dvec3(1.0, 0.0, 0.0));
+	this->rot2 = new Rotor(r, w, false, dvec3(1.0, 0.0, 0.0));
+	this->rot3 = new Rotor(r, w, false, dvec3(0.0, 1.0, 0.0));
+	this->rot4 = new Rotor(r, w, true, dvec3(0.0, 1.0, 0.0));
 
-	this->rot1 = new Rotor(r, w, true);
-	this->rot2 = new Rotor(r, w, false);
-	this->rot3 = new Rotor(r, w, false);
-	this->rot4 = new Rotor(r, w, true);
 
-	this->chasis->setModelMat( this->modelMat );
+	chasis->setModelMat( this->modelMat );
 
-	/*
-	this->rot1->setModelMat(translate(this->modelMat, dvec3(-this->escW / 2, this->escH / 2, -this->escW / 2)));
-	this->rot2->setModelMat(translate(this->modelMat, dvec3(this->escW / 2, this->escH / 2, -this->escW / 2)));
-	this->rot3 = new Rotor(r, w, false);
-	this->rot4 = new Rotor(r, w, true);
-	*/
+	this->rot1->setModelMat(translate(this->modelMat, dvec3(-escW / 2, escH / 2, -escW / 2)));
+	this->rot2->setModelMat(translate(this->modelMat, dvec3(escW / 2, escH / 2, -escW / 2)));
+	this->rot3->setModelMat(translate(this->modelMat, dvec3(-escW / 2, escH / 2, escW / 2)));
+	this->rot4->setModelMat(translate(this->modelMat, dvec3(escW / 2, escH / 2, escW / 2)));
+	
 
 	this->grObjects.push_back(chasis);
 	this->grObjects.push_back(rot1);
@@ -1002,13 +1014,14 @@ Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW)
 
 Dron::~Dron()
 {
-	delete chasis; chasis = nullptr;
+	//delete chasis; chasis = nullptr;
 	delete rot1; rot1 = nullptr;
 	delete rot2; rot2 = nullptr;
 	delete rot3; rot3 = nullptr;
 	delete rot4; rot4 = nullptr;
 }
 
+/*
 void Dron::render(dmat4 const &modelViewMat) {
 	CompoundEntity::render(modelViewMat);
 	return ;
@@ -1025,14 +1038,16 @@ void Dron::render(dmat4 const &modelViewMat) {
 	this->rot4->render(translate(modelViewMat, dvec3(this->escW / 2, this->escH / 2, this->escW / 2)));
 	glColor3f(0.0, 0.0, 0.0);
 }
+*/
 
+/*
 void Dron::update() {
 	this->rot1->update();
 	this->rot2->update();
 	this->rot3->update();
 	this->rot4->update();
 }
-
+*/
 //------------------------------------------------------------------------
 
 
@@ -1095,6 +1110,7 @@ Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 	// this->mesh = new MBR(m, n, perfil); // No funciona el polimorfismo Mesh-MBR
 	this->mbr = new MBR(m, n, perfil);
 
+	// this->color = fvec3(0.8, 0.4, 0.2);
 }
 
 Esfera::~Esfera(){
@@ -1104,16 +1120,50 @@ Esfera::~Esfera(){
 	if (mbr != nullptr) {
 		delete mbr; mbr = nullptr;
 	}
+	if (mat != nullptr) {
+		delete mat; mat = nullptr;
+	}
 }
 
-void Esfera::render(dmat4 const &modelViewMat)
-{
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	dmat4 auxModelMat = modelViewMat * this->modelMat;
-	uploadMvM(auxModelMat);
-	// mesh->render(); // No funciona el polimorfismo Mesh-MBR
-	mbr->render();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+void Esfera::render(dmat4 const &modelViewMat) {
+	if (mbr != nullptr) {
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
+		uploadMvM(auxModelMat);
+		
+		if ( color != fvec3(-1.0, -1.0, -1.0) )  // color.r != -1.0 || color.g != -1.0 || color.b != -1.0 ) 
+ 			glColor3fv( value_ptr(color)  );
+		else 
+			glColor3f(0.8, 0.4, 0.2);
+
+		switch (_material) {
+		case 0:
+			this->mat = nullptr;
+			break;
+		case 1:
+			this->mat = new Material();
+			this->mat->setCopper();
+			break;
+		case 2:
+			this->mat = new Material();
+			this->mat->setGold();
+			break;
+		case 3:
+			this->mat = new Material();
+			this->mat->setSilver();
+			break;
+		}
+
+		if (this->mat != nullptr) {
+			mat->upload();
+		}
+		mbr->render();
+		glEnd();
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 void Esfera::update() { }
@@ -1144,7 +1194,7 @@ void EsferaDron::render(dmat4 const &modelViewMat)
 	//this->esfera->render(modelViewMat);
 	__super::render(modelViewMat);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glColor3f(1.0, 0.0, 0.0);
+	//glColor3f(1.0, 0.0, 0.0);
 
 	dmat4 rot = modelViewMat;
 	rot = rotate(rot, radians(angMer), dvec3(0, 1, 0));
@@ -1155,7 +1205,7 @@ void EsferaDron::render(dmat4 const &modelViewMat)
 	
 	rot = translate(rot, dvec3(0.0, this->r +5, 0.0));
 	this->dron->render(rot);
-	glColor3f(0.0, 0.0, 0.0);
+	//glColor3f(0.0, 0.0, 0.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
@@ -1198,17 +1248,34 @@ void EsferaDron::move(int key) {
 
 //------------------------------------------------------------------------
 
-// ESFERA con un DRON sobrevolando
+// DRON con DRONES sobrevolando
 
 DronDrones::DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW) : Dron(r, w, escH, escW) {
 
-	this->factEsc = 0.2;
+	GLdouble factEsc = 0.2;
 	
 	//this->dron = new Dron(factEsc*r, factEsc*w, factEsc*escH, factEsc*escW);
 
-	this->deltaX = (this->escW / 2 ) / factEsc;
-	this->deltaY = (this->escH / 2 + this->w + 5) / factEsc;
-	this->deltaZ = (this->escW / 2) / factEsc;
+	GLdouble deltaX = (escW / 2 ) ;
+	GLdouble deltaY = (escH / 2 + w + 5) ;
+	GLdouble deltaZ = (escW / 2) ;
+
+	dmat4 escala = scale(this->modelMat, dvec3(factEsc));
+
+	Dron* dron1 = new Dron(r * factEsc, w * factEsc, escH * factEsc, escW * factEsc);
+	Dron* dron2 = new Dron(r * factEsc, w * factEsc, escH * factEsc, escW * factEsc);
+	Dron* dron3 = new Dron(r * factEsc, w * factEsc, escH * factEsc, escW * factEsc);
+	Dron* dron4 = new Dron(r * factEsc, w * factEsc, escH * factEsc, escW * factEsc);
+
+	dron1->setModelMat(translate(modelMat, dvec3(-deltaX, deltaY, -deltaZ)));
+	dron2->setModelMat(translate(modelMat, dvec3( deltaX, deltaY, -deltaZ)));
+	dron3->setModelMat(translate(modelMat, dvec3(-deltaX, deltaY,  deltaZ)));
+	dron4->setModelMat(translate(modelMat, dvec3( deltaX, deltaY,  deltaZ)));
+
+	this->grObjects.push_back(dron1);
+	this->grObjects.push_back(dron2);
+	this->grObjects.push_back(dron3);
+	this->grObjects.push_back(dron4);
 }
 
 DronDrones::~DronDrones() {
@@ -1217,8 +1284,10 @@ DronDrones::~DronDrones() {
 	//this->dron = nullptr;
 }
 
-void DronDrones::render(dmat4 const &modelViewMat)
-{
+void DronDrones::render(dmat4 const &modelViewMat) {
+	CompoundEntity::render(modelViewMat);
+	return;
+	/*
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	dmat4 escala = scale(modelViewMat, dvec3(factEsc));
 	__super::render(modelViewMat);
@@ -1234,12 +1303,12 @@ void DronDrones::render(dmat4 const &modelViewMat)
 	//this->dron->render(translate(modelViewMat, dvec3(-this->deltaX, this->deltaY,  this->deltaZ) ) );
 	//this->dron->render(translate(modelViewMat, dvec3( this->deltaX, this->deltaY,  this->deltaZ) ) );
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
 }
-
+/*
 void DronDrones::update() {
 	__super::update();
 	//this->dron->update();
 }
-
+*/
 

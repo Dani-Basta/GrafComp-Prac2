@@ -31,7 +31,7 @@ Scene sceneAux;
 //Para capturar el último instante en que se realiza la actualización.
 GLuint last_update_tick;
 
-bool activated = true;
+bool activated = false;
 
 glm::dvec2 mCoord;
 int mBot = 0;
@@ -41,6 +41,9 @@ double ratioWH = 800 / 600;
 int gridRows = 2, gridCols = 2;
 
 bool twoPorts = false;
+
+const GLfloat ambGrey[] = { 0.5, 0.5, 0.5, 1.0 };
+const GLfloat ambBlack[] = { 0.0, 0.0, 0.0, 1.0 };
 
 
 //----------- Callbacks ----------------------------------------------------
@@ -104,8 +107,12 @@ int main(int argc, char *argv[]) {
 	// El profesor ha dicho que todo será en 3D este cuatri
 	// scene.init2D();		//CAMBIADO POR NOSOTROS
 	// scene.init3D();
-	scene.init();
 	sceneAux.dronDrones();
+	//scene.esferaRev();
+	scene.esferaMateriales(2);
+
+	glEnable(GL_LIGHTING);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
 
 	glutMainLoop(); 
 
@@ -260,6 +267,16 @@ void key(unsigned char key, int x, int y) {
 		cameraAux.changeProj();
 		break;
 
+	case 'n':
+		//glDisable(GL_LIGHTING);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambBlack);
+		break;
+	case 'm':
+		//glEnable(GL_LIGHTING);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
+		
+		break;
+
 	/*case '2':
 	// Para el intercambio entre escenas 2D y 3D.
 	// Se deja aquí para hacer pruebas, pero en principio sobra
@@ -281,6 +298,15 @@ void key(unsigned char key, int x, int y) {
 		break;
 	case '3':
 		scene.dronDrones();
+		break;
+	case '4':
+		scene.esferaMateriales(1);
+		break;
+	case '5':
+		scene.esferaMateriales(2);
+		break;
+	case '6':
+		scene.esferaMateriales(3);
 		break;
 
 	default:

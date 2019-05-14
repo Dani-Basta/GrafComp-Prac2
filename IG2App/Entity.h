@@ -8,9 +8,12 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Pixmap32RGBA.h"
+#include "Lights.h"
 #include <vector>
 
 //-------------------------------------------------------------------------
+
+static int _material = 1;
 
 class Entity {
 public:
@@ -38,6 +41,8 @@ protected:
 
 	glm::dmat4 modelMat;    // modeling matrix
 
+	glm::fvec3 color = glm::fvec3(-1.0, -1.0, -1.0);
+
 	// transfers modelViewMat to the GPU
 	virtual void uploadMvM(glm::dmat4 const& modelViewMat) const;
 };
@@ -50,6 +55,7 @@ protected:
 
 class CompoundEntity : public Entity {
 public:
+	//CompoundEntity() { grObjects = std::vector<Entity*>(); }
 	~CompoundEntity() {
 		for (Entity* it : grObjects) 
 			delete it;
@@ -185,10 +191,10 @@ public:
 class RectanguloRGB : public Entity {
 public:
 	RectanguloRGB(GLdouble w, GLdouble h);
+	RectanguloRGB(GLdouble w, GLdouble h, glm::fvec3 color);
 	~RectanguloRGB();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
-
 };
 
 //-------------------------------------------------------------------------
@@ -363,9 +369,9 @@ protected:
 	RectanguloRGB *rect;
 	Cylinder *cil;
 public:
-	Rotor(GLdouble r, GLdouble w, bool clockwise); // r is the radius of the sphere
+	Rotor(GLdouble r, GLdouble w, bool clockwise, glm::dvec3 color); // r is the radius of the sphere
 	~Rotor();
-	void render(glm::dmat4 const& modelViewMat);
+	//void render(glm::dmat4 const& modelViewMat);
 	virtual void update();
 
 };
@@ -395,17 +401,17 @@ public:
 
 class Dron : public CompoundEntity {
 protected:
+	/*
 	GLdouble escH;		//Factor de escalado en altura.
 	GLdouble escW;		//Factor de escalado en anchura.
-	GLdouble r, w;
-	Chasis* chasis = nullptr;
+	GLdouble r, w;*/
+	//Chasis* chasis = nullptr;
 	Rotor *rot1 = nullptr, *rot2 = nullptr, *rot3 = nullptr, *rot4 = nullptr;
 public:
 	Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
 	~Dron();
-	virtual void render(glm::dmat4 const &modelViewMat);
-	virtual void update();
-
+	//virtual void render(glm::dmat4 const &modelViewMat);
+	//virtual void update();
 };
 
 
@@ -439,6 +445,8 @@ protected:
 	GLdouble m, n; //número de paralelos y meridianos
 
 	MBR* mbr = nullptr;
+
+	Material* mat = nullptr;
 
 public:
 	Esfera(GLdouble r, GLdouble m, GLdouble n);
@@ -477,14 +485,16 @@ class DronDrones : public Dron {
 protected:
 
 	//Dron* dron = nullptr;
+	/*
 	GLdouble factEsc;
 	GLdouble deltaX, deltaY, deltaZ;
+	*/
 
 public:
 	DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
 	~DronDrones(void);
 	virtual void render(glm::dmat4 const &modelViewMat);
-	virtual void update();
+	//virtual void update();
 };
 
 #endif //_H_Entities_H_
