@@ -377,7 +377,7 @@ Mesh*  Mesh::generaCajaTexCor(GLdouble h, GLdouble w) {
 	Mesh* m = generaCubo(h, w);
 	m->texCoords = new dvec2[m->numVertices];
 	
-	m->texCoords[0] = dvec2(1,0);
+	m->texCoords[0] = dvec2(1, 0);
 	m->texCoords[1] = dvec2(0, 0);
 	m->texCoords[2] = dvec2(1, 1);
 	m->texCoords[3] = dvec2(0, 1);
@@ -594,7 +594,7 @@ void MBR::render() {
 											indice + 1 };
 					glDrawElements(primitive, 4, GL_UNSIGNED_INT, index);
 					}
-			//...
+			glDisableClientState(GL_NORMAL_ARRAY);
 		}
 
 		glDisableClientState(GL_VERTEX_ARRAY);

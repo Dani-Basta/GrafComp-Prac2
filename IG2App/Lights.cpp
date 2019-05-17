@@ -9,9 +9,13 @@ Light::Light() {
 	if (cont < GL_MAX_LIGHTS) {
 		this->id = GL_LIGHT0 + cont;
 		cont++;
-		glEnable(id);
+		//glEnable(id);
 	}
 };
+
+GLuint Light::getId(void){
+	return this->id;
+}
 
 void Light::uploadL() {
 	// Transfiere las características de la luz a la GPU
@@ -63,7 +67,7 @@ void PosLight::setPosDir(fvec3 dir) {
 //-------------------------------------------------------------------------
 
 void SpotLight::upload(dmat4 const& modelViewMat) {
-	PosLight::upload(modelViewMat);
+	__super::upload(modelViewMat);
 	glLightfv(id, GL_SPOT_DIRECTION, value_ptr(direction));
 	glLightf(id, GL_SPOT_CUTOFF, cutoff);
 	glLightf(id, GL_SPOT_EXPONENT, exp);
@@ -76,6 +80,44 @@ void SpotLight::setSpot(fvec3 dir, GLfloat cf, GLfloat e) {
 }
 
 //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+Material::Material(mater tipo) {
+	switch (tipo)
+	{
+	case Material::Copper:
+		setCopper();
+		break;
+	case Material::BPlastic:
+		setBlackPlastic();
+		break;
+	case Material::Brass:
+		setBrass();
+		break;
+	case Material::Bronze:
+		setBronze();
+		break;
+	case Material::Chrome:
+		setChrome();
+		break;
+	case Material::Gold:
+		setGold();
+		break;
+	case Material::Pewter:
+		setPewter();
+		break;
+	case Material::Silver:
+		setSilver();
+		break;
+	case Material::PolSilver:
+		setPolishedSilver();
+		break;
+	default:
+		break;
+	}
+}
 
 void Material::upload() {
 	glMaterialfv(face, GL_AMBIENT, value_ptr(ambient));
@@ -114,7 +156,7 @@ void Material::setChrome(void) {
 	expF = 76.8;
 }
 
-void Material::setCopper() {
+void Material::setCopper(void) {
 	ambient = { 0.19125, 0.0735, 0.0225, 1 };
 	diffuse = { 0.7038, 0.27048, 0.0828, 1 };
 	specular = { 0.256777, 0.137622, 0.086014, 1 };

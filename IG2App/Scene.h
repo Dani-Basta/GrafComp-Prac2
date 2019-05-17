@@ -28,7 +28,7 @@ protected:
 
 	std::vector<Light*> lights;
 
-	//Light* ambGlo;
+	SpotLight* cameraLight = nullptr;
 
 public:
     Scene() : esfera(nullptr){ 
@@ -38,14 +38,17 @@ public:
 	void init2D(void);
 	void init3D(void);
 	void noria(int n);
-	void apagarLuces();
 	void esferaRev(void);
-	void esferaMateriales(int color);
+	void esferaMinero(void);
+	void dronMinero(void);
+	void esferaMateriales(void);
 	void init(void);
 	void dronDrones(void);
 
     void render(glm::dmat4 const &modelViewMat);
 	void update(GLuint timeElapsed);
+	void apagarLuces(void);
+	void encenderLuces(void);
 	void update(void);
 
 	void move(int key);

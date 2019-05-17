@@ -37,20 +37,35 @@ Sphere::Sphere(GLdouble r) {
 	this->r = r;
 }
 
+
 void Sphere::render(glm::dmat4 const& modelViewMat) {
-	
-	uploadMvM(modelViewMat);
-	
+	dmat4 modelMatAux = modelViewMat * this->modelMat;
+	uploadMvM(modelMatAux);
+
 	// Fijar el color con glColor3f(...);
 	glColor3f(0.0, 0.0, 0.0);
-	
-	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	gluQuadricDrawStyle(q, GLU_LINE);
 
-	gluSphere(q, r, 50, 50);
+	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
+	//gluQuadricDrawStyle(q, GLU_LINE);
 
 	gluQuadricDrawStyle(q, GLU_FILL);
 
+	/*
+	glDisable(GL_COLOR_MATERIAL);
+
+	Material mat =
+		//Material(Material::Copper);
+		Material(Material::Gold);
+	//Material(Material::Silver);
+	mat.upload();
+
+
+	gluSphere(q, r, 50, 50);
+
+
+	gluQuadricDrawStyle(q, GLU_FILL);
+	glEnable(GL_COLOR_MATERIAL);
+	*/
 	glColor3f(1.0, 1.0, 1.0);
 }
 
@@ -60,10 +75,11 @@ Cylinder::Cylinder(GLdouble r1, GLdouble r2, GLdouble h) {
 	this->r1 = r1;
 	this->r2 = r2;
 	this->h = h;
+	this->modelMat = dmat4(1.0);
 }
 
 void Cylinder::render(glm::dmat4 const& modelViewMat) {
-
+	//dmat4 modelMatAux = modelViewMat * this->modelMat;
 	uploadMvM(modelViewMat);
 
 	// Fijar el color con glColor3f(...);
@@ -71,6 +87,9 @@ void Cylinder::render(glm::dmat4 const& modelViewMat) {
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
 	//gluQuadricDrawStyle(q, GLU_LINE);
+	
+
+	gluQuadricDrawStyle(q, GLU_FILL);
 
 	gluCylinder(q, r1, r2, h, 50, 50);
 
@@ -87,8 +106,8 @@ Disk::Disk(GLdouble r1, GLdouble r2) {
 }
 
 void Disk::render(glm::dmat4 const& modelViewMat) {
-
-	uploadMvM(modelViewMat);
+	dmat4 modelMatAux = modelViewMat * this->modelMat;
+	uploadMvM(modelMatAux);
 
 	// Fijar el color con glColor3f(...);
 	glColor3f(0.0, 0.0, 0.0);
@@ -112,7 +131,8 @@ PartialDisk::PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin) {
 }
 
 void PartialDisk::render(glm::dmat4 const & modelViewMat) {
-	uploadMvM(modelViewMat);
+	dmat4 modelMatAux = modelViewMat * this->modelMat;
+	uploadMvM(modelMatAux);
 
 	// Fijar el color con glColor3f(...);
 	glColor3f(0.0, 0.0, 0.0);
@@ -862,7 +882,6 @@ Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise, dvec3 color) {
 
 	this->incrAngle = clockwise ? -37 : 37;
 
-	
 	dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
 
 	dmat4 rectMM = translate(modelMat, dvec3(0, this->w / 4, 0 ));
@@ -1012,33 +1031,36 @@ Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW) {
 	this->grObjects.push_back(rot4);
 }
 
-Dron::~Dron()
-{
+Dron::Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW, SpotLight* li) : Dron(r,w,escH,escW) {
+	this->cameraLight = li;
+	li->setPosDir(fvec3(0, -escH/2, 0));
+	cameraLight->enable();
+}
+
+Dron::~Dron() {
 	//delete chasis; chasis = nullptr;
 	delete rot1; rot1 = nullptr;
 	delete rot2; rot2 = nullptr;
 	delete rot3; rot3 = nullptr;
 	delete rot4; rot4 = nullptr;
+	if (this->cameraLight != nullptr) {
+		cameraLight->disable();
+		delete cameraLight;
+		cameraLight = nullptr ;
+	}
 }
 
-/*
+//*
 void Dron::render(dmat4 const &modelViewMat) {
-	CompoundEntity::render(modelViewMat);
-	return ;
+	if (this->cameraLight != nullptr) {
+		//cameraLight->enable();
+		dmat4 auxModelMat = modelViewMat * this->modelMat;
+		cameraLight->upload(dmat4(1.0)* auxModelMat);
+	}
+	__super::render(modelViewMat);
 
-	this->chasis->render(modelViewMat);
-
-	glColor3f(1.0, 0.0, 0.0);
-	this->rot1->render(translate(modelViewMat, dvec3(-this->escW/2, this->escH/2, -this->escW / 2) ) );
-	glColor3f(1.0, 0.0, 0.0);
-	this->rot2->render(translate(modelViewMat, dvec3(this->escW / 2, this->escH / 2, -this->escW / 2)));
-	glColor3f(0.0, 1.0, 0.0);
-	this->rot3->render(translate(modelViewMat, dvec3(-this->escW / 2, this->escH / 2, this->escW / 2)));
-	glColor3f(0.0, 1.0, 0.0);
-	this->rot4->render(translate(modelViewMat, dvec3(this->escW / 2, this->escH / 2, this->escW / 2)));
-	glColor3f(0.0, 0.0, 0.0);
 }
-*/
+//*/
 
 /*
 void Dron::update() {
@@ -1053,8 +1075,7 @@ void Dron::update() {
 
 //Cono
 
-Cone::Cone(GLdouble h, GLdouble r)
-{
+Cone::Cone(GLdouble h, GLdouble r) {
 	this->r = r;    //radio de la base
 	this->h = h;    //altura del cono
 	int m = 3; // m=número de puntos del perfil
@@ -1066,7 +1087,7 @@ Cone::Cone(GLdouble h, GLdouble r)
 	this->mbr = new MBR(m, 100, perfil);
 }
 
-Cone::~Cone(){
+Cone::~Cone() {
 	if (mesh != nullptr) {
 		delete mesh; mesh = nullptr;
 	}
@@ -1075,8 +1096,7 @@ Cone::~Cone(){
 	}
 }
 
-void Cone::render(dmat4 const &modelViewMat)
-{
+void Cone::render(dmat4 const &modelViewMat) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	dmat4 auxModelMat = modelViewMat * this->modelMat;
 	uploadMvM(auxModelMat);
@@ -1101,16 +1121,23 @@ Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n) {
 
 	dvec3* perfil = new dvec3[m];
 
-	GLdouble incrX = pi<GLdouble>() / (m-1);
-	GLdouble incrY = 2 * r / (m-1);
+	GLdouble angBase = -90.0;
+
+	GLdouble incrAng = 180 / (m-1) ;
 
 	for (size_t i = 0; i < m; i++)	
-		perfil[i] = dvec3( sin(i*incrX ) * r , cos(i*incrX)*r, 0.0);
+		perfil[i] = dvec3( r * cos( radians(angBase + i*incrAng)  ) , r * sin(radians(angBase + i * incrAng)), 0.0);
 
 	// this->mesh = new MBR(m, n, perfil); // No funciona el polimorfismo Mesh-MBR
 	this->mbr = new MBR(m, n, perfil);
 
 	this->color = fvec3(0.8, 0.4, 0.2);
+}
+
+//Esfera
+
+Esfera::Esfera(GLdouble r, GLdouble m, GLdouble n, Material::mater mater) : Esfera(r,n,m) {
+	this->mat = new Material(mater);
 }
 
 Esfera::~Esfera(){
@@ -1134,17 +1161,29 @@ void Esfera::render(dmat4 const &modelViewMat) {
 		dmat4 auxModelMat = modelViewMat * this->modelMat;
 		uploadMvM(auxModelMat);
 
-		/*
-		this->mat = new Material();
-		this->mat->setGold();
-		mat->upload();
-		//*/
-		mbr->render();
+		if (this->mat != nullptr) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glDisable(GL_COLOR_MATERIAL);
+			mat->upload();
 
-		glEnd();
+			mbr->render();
+			
+			glEnable(GL_COLOR_MATERIAL);
+		}
+		else {
+			glEnable(GL_COLOR_MATERIAL);
+			//this->color = fvec3(0.8, 0.4, 0.2);
+			if ( color != fvec3(-1.0, -1.0, -1.0) )  // color.r != -1.0 || color.g != -1.0 || color.b != -1.0 )
+				glColor3fv( value_ptr(color)  );
+			else
+				glColor3f(0.24725, 0.1995, 0.0745);
+			mbr->render();
+		}
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
+
+
 
 void Esfera::update() { }
 
@@ -1160,6 +1199,16 @@ EsferaDron::EsferaDron(GLdouble r, GLdouble m, GLdouble n) : Esfera(r, m, n) {
 	this->dron = new Dron(5, 2, 5, 20);
 }
 
+// ESFERA con un DRON sobrevolando
+
+EsferaDron::EsferaDron(GLdouble r, GLdouble m, GLdouble n, Material::mater mat, SpotLight* li) : Esfera(r, m, n, mat) {
+
+	this->angMer = 45.0;
+	this->angPar = 0.0;
+
+	this->dron = new Dron(5, 2, 5, 20, li);
+}
+
 EsferaDron::~EsferaDron() {
 	//this->esfera->~Esfera();
 	//this->esfera = nullptr;
@@ -1168,14 +1217,8 @@ EsferaDron::~EsferaDron() {
 	this->dron = nullptr;
 }
 
-void EsferaDron::render(dmat4 const &modelViewMat)
-{
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//this->esfera->render(modelViewMat);
-	__super::render(modelViewMat);
+void EsferaDron::render(dmat4 const &modelViewMat) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//glColor3f(1.0, 0.0, 0.0);
-
 	dmat4 rot = modelViewMat;
 	rot = rotate(rot, radians(angMer), dvec3(0, 1, 0));
 	rot = rotate(rot, radians(angPar), dvec3(1, 0, 0));
@@ -1183,10 +1226,15 @@ void EsferaDron::render(dmat4 const &modelViewMat)
 	//rot = translate(rot, dvec3(0, (r + 5) * sin(radians(angPar) ), 0));
 	//rot = translate(rot, dvec3(0, (r + 5) * sin(radians(angPar)), 0));
 	
-	rot = translate(rot, dvec3(0.0, this->r +5, 0.0));
+	rot = translate(rot, dvec3(0.0, this->r + 20, 0.0));
 	this->dron->render(rot);
 	//glColor3f(0.0, 0.0, 0.0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	//this->esfera->render(modelViewMat);
+	__super::render(modelViewMat);
+
+	//glColor3f(1.0, 0.0, 0.0);
+
 }
 
 void EsferaDron::update() { 

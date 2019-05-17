@@ -405,10 +405,14 @@ protected:
 	GLdouble r, w;*/
 	//Chasis* chasis = nullptr;
 	Rotor *rot1 = nullptr, *rot2 = nullptr, *rot3 = nullptr, *rot4 = nullptr;
+
+	SpotLight* cameraLight = nullptr;
+
 public:
 	Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
+	Dron(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW, SpotLight* li);
 	~Dron();
-	//virtual void render(glm::dmat4 const &modelViewMat);
+	virtual void render(glm::dmat4 const &modelViewMat);
 	//virtual void update();
 };
 
@@ -448,6 +452,7 @@ protected:
 
 public:
 	Esfera(GLdouble r, GLdouble m, GLdouble n);
+	Esfera(GLdouble r, GLdouble m, GLdouble n, Material::mater mat);
 	~Esfera();
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();
@@ -469,6 +474,7 @@ protected:
 
 public:
 	EsferaDron(GLdouble r, GLdouble m, GLdouble n);
+	EsferaDron(GLdouble r, GLdouble m, GLdouble n, Material::mater mat, SpotLight* li);
 	~EsferaDron(void);
 	virtual void render(glm::dmat4 const &modelViewMat);
 	virtual void update();

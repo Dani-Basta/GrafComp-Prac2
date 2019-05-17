@@ -31,7 +31,7 @@ Scene sceneAux;
 //Para capturar el último instante en que se realiza la actualización.
 GLuint last_update_tick;
 
-bool activated = false;
+bool activated = true;
 
 glm::dvec2 mCoord;
 int mBot = 0;
@@ -107,9 +107,17 @@ int main(int argc, char *argv[]) {
 	// El profesor ha dicho que todo será en 3D este cuatri
 	// scene.init2D();		//CAMBIADO POR NOSOTROS
 	// scene.init3D();
+
 	sceneAux.dronDrones();
-	//scene.esferaRev();
-	scene.esferaMateriales(3);
+
+	// apartado 18-19
+	scene.esferaRev();
+	// apartado 20
+	//scene.esferaMateriales();
+	// apartado 21
+	//scene.esferaMinero();
+	// apartado 22
+	//scene.dronMinero();
 
 	glEnable(GL_LIGHTING);
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
@@ -142,7 +150,7 @@ void Update() {
 void display() {   // double buffering
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
-	
+  
 	//scene.render(camera.getViewMat());   
     
 	if (twoPorts) {
@@ -270,12 +278,10 @@ void key(unsigned char key, int x, int y) {
 	case 'n':
 		//glDisable(GL_LIGHTING);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambBlack);
-		scene.render(camera.getViewMat());
 		break;
 	case 'm':
 		//glEnable(GL_LIGHTING);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambGrey);
-		scene.render(camera.getViewMat());
 		break;
 
 	/*case '2':
@@ -301,13 +307,13 @@ void key(unsigned char key, int x, int y) {
 		scene.dronDrones();
 		break;
 	case '4':
-		scene.esferaMateriales(1);
+		scene.esferaMateriales();
 		break;
 	case '5':
-		scene.esferaMateriales(2);
+		scene.esferaMinero();
 		break;
 	case '6':
-		scene.esferaMateriales(3);
+		scene.dronMinero();
 		break;
 
 	default:
@@ -400,15 +406,15 @@ void mouseWheel(int n, int d, int x, int y) {
 		// d=+1/-1, rueda hacia delante/hacia atrás
 		if (d == 1) {
 			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
-				cameraAux.moveFB(50);
+				cameraAux.moveFB(10);
 			else
-				camera.moveFB(50);
+				camera.moveFB(10);
 		}
 		else {
 			if (twoPorts && x > glutGet(GLUT_WINDOW_WIDTH) / 2)
-				cameraAux.moveFB(-50);
+				cameraAux.moveFB(-10);
 			else
-				camera.moveFB(-50);
+				camera.moveFB(-10);
 		}
 	}
 	else if (m == GLUT_ACTIVE_CTRL) {

@@ -19,11 +19,14 @@ protected:
 	glm::fvec4 ambient = { 0.1, 0.1, 0.1, 1 };
 	glm::fvec4 diffuse = { 0.5, 0.5, 0.5, 1 };
 	glm::fvec4 specular = { 0.5, 0.5, 0.5, 1 };
+
 	glm::fvec4 posDir = { 0, 0, 1, 0 };
 
 public:
 	Light(void);
 	virtual ~Light(void) { disable(); }
+
+	GLuint getId(void);
 
 	void uploadL(void);
 	void disable(void);
@@ -68,9 +71,14 @@ public:
 class SpotLight : public PosLight  {
 protected:
 	// Atributos del foco
+	//Hacia dónde mira el foco, un vector
 	glm::fvec4 direction = { 0, 0, -1, 0 };
-	GLfloat cutoff = 180;
+	//Apertura del ángulo del foco
+	GLfloat cutoff = 45;
+	// Grado de atenuación al alejarse del centro del foco
 	GLfloat exp = 0;
+	/* En este tipo de luz no tiene sentido 
+	*/
 public:
 	SpotLight(glm::fvec3 pos = { 0, 0, 0 } ) : PosLight() {
 		posDir = glm::fvec4(pos, 1.0);
@@ -79,6 +87,9 @@ public:
 	void setSpot(glm::fvec3 dir, GLfloat cf, GLfloat e);
 };
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
 class Material {
@@ -91,7 +102,11 @@ protected:
 	GLuint face = GL_FRONT_AND_BACK;
 	GLuint sh = GL_SMOOTH; // Tipo de matizado
 public:
+	const enum mater {
+		Copper, BPlastic,Brass,Bronze,Chrome,Gold,Pewter,Silver,PolSilver 
+	};
 	Material(void) {};
+	Material(mater tipo);
 	virtual ~Material(void) {};
 	void upload(void);
 	void setCopper(void);
