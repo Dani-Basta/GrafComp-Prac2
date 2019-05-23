@@ -79,7 +79,6 @@ int main(int argc, char *argv[]) {
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS); 
 
 	glutInitWindowSize(800, 600);   // window size
-	//glutInitWindowPosition (140, 140);
 
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH /*| GLUT_STENCIL*/); // RGBA colors, double buffer, depth buffer and stencil buffer 
 
@@ -110,8 +109,10 @@ int main(int argc, char *argv[]) {
 
 	sceneAux.dronDrones();
 
+	scene.myScene();
+
 	// apartado 18-19
-	scene.esferaRev();
+	//scene.esferaRev();
 	// apartado 20
 	//scene.esferaMateriales();
 	// apartado 21
@@ -300,9 +301,10 @@ void key(unsigned char key, int x, int y) {
 	case '1':
 		scene.esferaRev();
 		break;
+		/*
 	case '2':
 		scene.init();
-		break;
+		break;*/
 	case '3':
 		scene.dronDrones();
 		break;

@@ -35,15 +35,19 @@ public:
 		
 	};
 	~Scene();
-	void init2D(void);
-	void init3D(void);
+	//void init2D(void);
+	//void init3D(void);
 	void noria(int n);
 	void esferaRev(void);
 	void esferaMinero(void);
 	void dronMinero(void);
 	void esferaMateriales(void);
-	void init(void);
+	//void init(void);
 	void dronDrones(void);
+
+	void myScene(void);
+
+
 
     void render(glm::dmat4 const &modelViewMat);
 	void update(GLuint timeElapsed);

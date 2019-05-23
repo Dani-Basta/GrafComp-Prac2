@@ -102,6 +102,94 @@ void Scene::move(int key) {
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
+
+void Scene::myScene() {
+	grObjects.clear();
+
+	glClearColor(1.0, 1.0, 1.0, 1.0);  // background color (alpha=1 -> opaque)
+	glEnable(GL_DEPTH_TEST);  // enable Depth test 
+	glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_NORMALIZE);
+
+
+	//Añadimos una luz que apunte a (1,1,0). DIRLIGHT APUNTA DEL INFINITO A (1,1,0).
+	
+	DirLight* light = new DirLight();
+	light->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
+	light->setAmbient(fvec4(0.2, 0.2, 0.2, 1.0));
+	light->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
+
+	light->setPosDir(fvec3(1, 1, 0));
+
+	lights.push_back(light);
+	
+	grObjects.push_back(new EjesRGB(200.0));
+
+	//APARTADOS
+
+	//Dron de drones
+	//grObjects.push_back(new DronDrones(35, 15, 30, 200));
+
+	//Esfera por revolución
+	//grObjects.push_back(new Esfera(100, 100, 100));
+
+	//Esfera de materiales
+	/*
+	Esfera* esf =
+		//new Esfera(100, 100, 100, Material::Copper);
+		new Esfera(100, 100, 100, Material::Gold);
+		//new Esfera(100, 100, 100, Material::Silver);
+
+	grObjects.push_back(esf);
+	*/
+
+	//Foco en la cámara
+	/*
+	this->cameraLight = new SpotLight();
+	this->cameraLight->setDiffuse(fvec4(0.4, 0.8, 0.0, 1.0));
+	this->cameraLight->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
+
+	this->cameraLight->setAmbient(fvec4(0.0, 0.0, 0.0, 1.0));
+
+	this->cameraLight->setPosDir(fvec3(0, 0, -1));
+	this->cameraLight->setSpot(fvec3(0, 0, -1), 8, 0);
+
+	this->cameraLight->enable();
+
+	Esfera* esf =
+		//new Esfera(100, 100, 100, Material::Copper);
+		new Esfera(200, 100, 100, Material::Gold);
+	//new Esfera(100, 100, 100, Material::Silver);
+
+	grObjects.push_back(esf);
+
+	*/
+
+	//Dron con foco
+	/*
+	SpotLight* dronLight = new SpotLight();
+	dronLight->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
+	dronLight->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
+	dronLight->setAmbient(fvec4(0.0, 0.0, 0.0, 1.0));
+
+	dronLight->setPosDir(fvec3(-1000, 1000, -1000));
+	dronLight->setSpot(fvec3(0, -1, 0), 45, 0);
+
+	dronLight->enable();
+
+	esfera =
+		//new EsferaDron(200, 100, 100, Material::Copper);
+		new EsferaDron(200, 200, 200, Material::Gold, dronLight);
+	//new EsferaDron(200, 100, 100, Material::Silver);
+
+	grObjects.push_back(esfera);
+	*/	
+}
+
+/*
 //Escena 2D.
 void Scene::init2D() {
 	// OpenGL basic setting
@@ -128,9 +216,9 @@ void Scene::init2D() {
 	grObjects.push_back(new RectanguloRGB(30, 20));
 	grObjects.push_back(new TrianguloAnimado(40, 0, 0, 15));
 }
-
+*/
 //-------------------------------------------------------------------------
-
+/*
 //Escena 3D
 void Scene::init3D() {
 	// OpenGL basic setting
@@ -159,7 +247,7 @@ void Scene::init3D() {
 
 
 }
-
+*/
 //-------------------------------------------------------------------------
 
 void Scene::noria(int n) {
@@ -186,7 +274,7 @@ void Scene::noria(int n) {
 
 
 //-------------------------------------------------------------------------
-
+/*
 void Scene::init() {
 	lights.clear();
 	grObjects.clear();
@@ -202,7 +290,7 @@ void Scene::init() {
 	grObjects.push_back(this->esfera);
 
 }
-
+*/
 //-------------------------------------------------------------------------
 
 void Scene::dronDrones() {
@@ -236,6 +324,7 @@ void Scene::esferaRev() {
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_NORMALIZE);
+
 
 	//lights.push_back( ambGlo );
 	DirLight* light = new DirLight();
