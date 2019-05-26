@@ -1304,14 +1304,13 @@ DronDrones::DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW) : D
 
 DronDrones::~DronDrones() {
 	Dron::~Dron();
-	//this->dron->~Dron();
-	//this->dron = nullptr;
+	CompoundEntity::~CompoundEntity();
 }
-
+/*
 void DronDrones::render(dmat4 const &modelViewMat) {
 	CompoundEntity::render(modelViewMat);
 	return;
-	/*
+	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	dmat4 escala = scale(modelViewMat, dvec3(factEsc));
 	__super::render(modelViewMat);
@@ -1327,8 +1326,8 @@ void DronDrones::render(dmat4 const &modelViewMat) {
 	//this->dron->render(translate(modelViewMat, dvec3(-this->deltaX, this->deltaY,  this->deltaZ) ) );
 	//this->dron->render(translate(modelViewMat, dvec3( this->deltaX, this->deltaY,  this->deltaZ) ) );
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
-}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+} //*/
 /*
 void DronDrones::update() {
 	__super::update();

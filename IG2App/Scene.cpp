@@ -116,7 +116,7 @@ void Scene::myScene() {
 
 
 	//Añadimos una luz que apunte a (1,1,0). DIRLIGHT APUNTA DEL INFINITO A (1,1,0).
-	
+	/*
 	DirLight* light = new DirLight();
 	light->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
 	light->setAmbient(fvec4(0.2, 0.2, 0.2, 1.0));
@@ -125,9 +125,7 @@ void Scene::myScene() {
 	light->setPosDir(fvec3(1, 1, 0));
 
 	lights.push_back(light);
-	
-	grObjects.push_back(new EjesRGB(200.0));
-
+	//*/
 	//APARTADOS
 
 
@@ -161,16 +159,16 @@ void Scene::myScene() {
 	this->cameraLight->enable();
 
 	Esfera* esf =
-		//new Esfera(100, 100, 100, Material::Copper);
+		//new Esfera(200, 100, 100, Material::Copper);
 		new Esfera(200, 100, 100, Material::Gold);
-	//new Esfera(100, 100, 100, Material::Silver);
+	//new Esfera(200, 100, 100, Material::Silver);
 
 	grObjects.push_back(esf);
 
 	*/
 
 	//Dron con foco
-	/*	
+	//*	
 	SpotLight* dronLight = new SpotLight();
 	dronLight->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
 	dronLight->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
@@ -180,14 +178,17 @@ void Scene::myScene() {
 	dronLight->setSpot(fvec3(0, -1, 0), 45, 0);
 
 	dronLight->enable();
-
+	
 	esfera =
 		//new EsferaDron(200, 100, 100, Material::Copper);
-		new EsferaDron(200, 200, 200, Material::Gold, dronLight);
+		new EsferaDron(200, 100, 100, Material::Gold, dronLight);
 	//new EsferaDron(200, 100, 100, Material::Silver);
 
 	grObjects.push_back(esfera);
-	*/
+	//*/
+
+
+	grObjects.push_back(new EjesRGB(300.0));
 }
 
 /*

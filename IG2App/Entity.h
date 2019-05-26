@@ -497,7 +497,7 @@ protected:
 public:
 	DronDrones(GLdouble r, GLdouble w, GLdouble escH, GLdouble escW);
 	~DronDrones(void);
-	virtual void render(glm::dmat4 const &modelViewMat);
+	//virtual void render(glm::dmat4 const &modelViewMat);
 	//virtual void update();
 };
 
