@@ -10,8 +10,11 @@ using namespace glm;
 
 void Camera::set2D() 
 {
+	//Dónde está la cámara
 	this->eye = dvec3(0, 0, 500);
+	//Dónde mira la cámara
 	this->look = dvec3(0, 0, 0);
+	//Cómo está orientada la cámara
 	this->up = dvec3(0, 1, 0);
 	//this->viewMat = lookAt(eye, look, up);
 

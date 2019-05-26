@@ -12,7 +12,6 @@ using namespace glm;
 /*
 De forma predeterminada se aplicará sobre modelMat y modelViewMat. Por lo tanto, si modificamos modelMat, 
 cuando llamemos a modelMat, se cargará otra cosa distinta.
-
 */
 
 void Entity::uploadMvM(dmat4 const& modelViewMat) const
@@ -39,11 +38,10 @@ Sphere::Sphere(GLdouble r) {
 
 
 void Sphere::render(glm::dmat4 const& modelViewMat) {
-	dmat4 modelMatAux = modelViewMat * this->modelMat;
-	uploadMvM(modelMatAux);
+	uploadMvM(modelViewMat * this->modelMat);
 
 	// Fijar el color con glColor3f(...);
-	glColor3f(0.0, 0.0, 0.0);
+	//glColor3f(0.0, 0.0, 0.0);
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
 	//gluQuadricDrawStyle(q, GLU_LINE);
@@ -66,7 +64,7 @@ void Sphere::render(glm::dmat4 const& modelViewMat) {
 	gluQuadricDrawStyle(q, GLU_FILL);
 	glEnable(GL_COLOR_MATERIAL);
 	*/
-	glColor3f(1.0, 1.0, 1.0);
+	//glColor3f(1.0, 1.0, 1.0);
 }
 
 void Sphere::update() {}
@@ -75,12 +73,11 @@ Cylinder::Cylinder(GLdouble r1, GLdouble r2, GLdouble h) {
 	this->r1 = r1;
 	this->r2 = r2;
 	this->h = h;
-	this->modelMat = dmat4(1.0);
 }
 
 void Cylinder::render(glm::dmat4 const& modelViewMat) {
-	//dmat4 modelMatAux = modelViewMat * this->modelMat;
-	uploadMvM(modelViewMat);
+	uploadMvM(modelViewMat * this->modelMat);
+	//uploadMvM(modelViewMat);
 
 	// Fijar el color con glColor3f(...);
 	//glColor3f(0.0, 0.0, 0.0);
@@ -89,7 +86,7 @@ void Cylinder::render(glm::dmat4 const& modelViewMat) {
 	//gluQuadricDrawStyle(q, GLU_LINE);
 	
 
-	gluQuadricDrawStyle(q, GLU_FILL);
+	//gluQuadricDrawStyle(q, GLU_FILL);
 
 	gluCylinder(q, r1, r2, h, 50, 50);
 
@@ -106,19 +103,18 @@ Disk::Disk(GLdouble r1, GLdouble r2) {
 }
 
 void Disk::render(glm::dmat4 const& modelViewMat) {
-	dmat4 modelMatAux = modelViewMat * this->modelMat;
-	uploadMvM(modelMatAux);
+	uploadMvM(modelViewMat * this->modelMat);
 
 	// Fijar el color con glColor3f(...);
-	glColor3f(0.0, 0.0, 0.0);
+	//glColor3f(0.0, 0.0, 0.0);
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	gluQuadricDrawStyle(q, GLU_LINE);
+	//gluQuadricDrawStyle(q, GLU_LINE);
 
-	(q, r1, r2, 50, 50);
+	gluDisk(q, r1, r2, 50, 50);
 
-	gluQuadricDrawStyle(q, GLU_FILL);
-	glColor3f(1.0, 1.0, 1.0);
+	//gluQuadricDrawStyle(q, GLU_FILL);
+	//glColor3f(1.0, 1.0, 1.0);
 }
 
 void Disk::update() {}
@@ -131,19 +127,18 @@ PartialDisk::PartialDisk(GLdouble r1, GLdouble r2, GLdouble ini, GLdouble fin) {
 }
 
 void PartialDisk::render(glm::dmat4 const & modelViewMat) {
-	dmat4 modelMatAux = modelViewMat * this->modelMat;
-	uploadMvM(modelMatAux);
+	uploadMvM(modelViewMat * this->modelMat);
 
 	// Fijar el color con glColor3f(...);
-	glColor3f(0.0, 0.0, 0.0);
+	//glColor3f(0.0, 0.0, 0.0);
 
 	// Fijar el modo en que se dibuja la entidad con gluQuadricDrawStyle(q, ...);
-	gluQuadricDrawStyle(q, GLU_LINE);
+	//gluQuadricDrawStyle(q, GLU_LINE);
 
 	gluPartialDisk(q, r1, r2, 50, 50, ini, fin);
 
 	//gluQuadricDrawStyle(q, GLU_FILL);
-	glColor3f(1.0, 1.0, 1.0);
+	//glColor3f(1.0, 1.0, 1.0);
 }
 
 void PartialDisk::update() {}
@@ -882,17 +877,20 @@ Rotor::Rotor(GLdouble r, GLdouble w, bool clockwise, dvec3 color) {
 
 	this->incrAngle = clockwise ? -37 : 37;
 
-	dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
+	//dmat4 cylMM = rotate(modelMat, radians(-90.0), dvec3(1, 0, 0));
 
-	dmat4 rectMM = translate(modelMat, dvec3(0, this->w / 4, 0 ));
+	//dmat4 rectMM = translate(modelMat, dvec3(0, this->w / 4, 0 ));
 
-	this->rect->setModelMat(rectMM);
-	this->cil->setModelMat(cylMM);
-	
+	//this->rect->setModelMat(rectMM);
+	//this->cil->setModelMat(cylMM);
+	this->rect->setModelMat(translate(this->rect->getModelMat(),dvec3(0, this->w / 4, 0)));
+	this->cil->setModelMat(rotate(this->cil->getModelMat(), radians(-45.0), dvec3(1, 0, 0)));
+
+
 	this->grObjects.push_back(this->rect);
 	this->grObjects.push_back(this->cil);	
 	
-	this->mesh = Mesh::generaRectangulo(2 * r, w);
+	//this->mesh = Mesh::generaRectangulo(2 * r, w);
 }
 
 Rotor::~Rotor() {
@@ -1050,7 +1048,6 @@ Dron::~Dron() {
 	}
 }
 
-//*
 void Dron::render(dmat4 const &modelViewMat) {
 	if (this->cameraLight != nullptr) {
 		//cameraLight->enable();
@@ -1060,7 +1057,6 @@ void Dron::render(dmat4 const &modelViewMat) {
 	__super::render(modelViewMat);
 
 }
-//*/
 
 /*
 void Dron::update() {

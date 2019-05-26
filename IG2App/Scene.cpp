@@ -130,6 +130,7 @@ void Scene::myScene() {
 
 	//APARTADOS
 
+
 	//Dron de drones
 	//grObjects.push_back(new DronDrones(35, 15, 30, 200));
 
@@ -140,8 +141,8 @@ void Scene::myScene() {
 	/*
 	Esfera* esf =
 		//new Esfera(100, 100, 100, Material::Copper);
-		new Esfera(100, 100, 100, Material::Gold);
-		//new Esfera(100, 100, 100, Material::Silver);
+		//new Esfera(100, 100, 100, Material::Gold);
+		new Esfera(100, 100, 100, Material::Silver);
 
 	grObjects.push_back(esf);
 	*/
@@ -169,7 +170,7 @@ void Scene::myScene() {
 	*/
 
 	//Dron con foco
-	/*
+	/*	
 	SpotLight* dronLight = new SpotLight();
 	dronLight->setDiffuse(fvec4(1.0, 1.0, 1.0, 1.0));
 	dronLight->setSpecular(fvec4(0.5, 0.5, 0.5, 1.0));
@@ -186,7 +187,7 @@ void Scene::myScene() {
 	//new EsferaDron(200, 100, 100, Material::Silver);
 
 	grObjects.push_back(esfera);
-	*/	
+	*/
 }
 
 /*
